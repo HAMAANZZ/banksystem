@@ -64,7 +64,7 @@ public class StartseiteController extends Controller {
         if (!accountName.trim().isEmpty()) {
             try {
                 bank.createAccount(accountName.trim());
-                listViewAcconts.getItems().add(accountName);
+                listViewAcconts.getItems().add(accountName.trim()); // " Muster " ===> "Muster"
 
             } catch (AccountAlreadyExistsException e) {
                 JOptionPane.showMessageDialog(null, "AccountAlreadyExistsException: " + e.getMessage(), "Fehler",
@@ -88,12 +88,34 @@ public class StartseiteController extends Controller {
      * accountAuswaehlen
      */
     private void accountAuswaehlen() {
-        System.out.println("Account ausgewählt.");
 
+        // Ausgewählten Account holen
+        String selectedAccount = listViewAcconts
+                .getSelectionModel()
+                .getSelectedItem();
+
+        // Prüfen, ob überhaupt ein Account ausgewählt wurde
+        if (selectedAccount == null) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Bitte zuerst einen Account auswählen.",
+                    "Kein Account ausgewählt",
+                    JOptionPane.WARNING_MESSAGE);
+
+            return;
+        }
+
+        System.out.println("Account ausgewählt: " + selectedAccount);
+
+        // Controller für Account Ansicht erstellen
         AccountViewController controller = new AccountViewController(stage);
-        controller.accountName = listViewAcconts.getSelectionModel().getSelectedItem();
-        this.loadScene("/AccountView.fxml", controller);
 
+        // Accountname übergeben
+        controller.accountName = selectedAccount;
+
+        // Account Ansicht öffnen
+        this.loadScene("/AccountView.fxml", controller);
     }
 
     /**
