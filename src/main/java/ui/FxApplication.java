@@ -29,10 +29,10 @@ public class FxApplication extends Application {
 
             Controller.stage = stage;
             Controller.bank = new PrivateBank("bank", 0.1, 0.1, "json/");
-            Controller.bank.createAccount("test");
-            Controller.bank.addTransaction("test",new Payment("Date",100,"Beschreibung"));
-            Controller.bank.addTransaction("test",new IncomingTransfer("Date",50,"Beschreibung"));
-            Controller.bank.addTransaction("test",new OutgoingTransfer("Date",50,"Beschreibung"));
+            Controller.bank.createAccount("Anzz Konto");
+            Controller.bank.addTransaction("Anzz Konto",new Payment("Date",100,"Beschreibung"));
+            Controller.bank.addTransaction("Anzz Konto",new IncomingTransfer("Date",50,"Beschreibung"));
+            Controller.bank.addTransaction("Anzz Konto",new OutgoingTransfer("Date",50,"Beschreibung"));
 
             StartseiteController controller = new StartseiteController();
 

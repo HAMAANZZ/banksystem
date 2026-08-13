@@ -7,6 +7,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+
+
 public class Controller {
 
     public static Stage stage; // Die aktuelle Stage speichern

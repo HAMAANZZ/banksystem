@@ -8,16 +8,19 @@ import java.util.*;
 
 /**
  * die Klasse entspricht eine Privatbank.
- * AltV1: in getAccountBalance wird Klassen IncomingTransfer und OutgoingTransfer Benutzt.
+ * AltV1: in getAccountBalance wird Klassen IncomingTransfer und
+ * OutgoingTransfer Benutzt.
  */
 public class PrivateBank implements Bank {
 
     /**
-     * Name:                        Bank Name
-     * incomingInterest:            Einkommen Zinsen satz
-     * outgoingInterest:            Ausgaben Zinsen satz
-     * accountsToTransactions:      Account name als Schlüssen und eine Liste von Transaction
-     * Transaction könnte Payment; Transfer; IncomingTransfer und OutcomingTransfer sein.
+     * Name: Bank Name
+     * incomingInterest: Einkommen Zinsen satz
+     * outgoingInterest: Ausgaben Zinsen satz
+     * accountsToTransactions: Account name als Schlüssen und eine Liste von
+     * Transaction
+     * Transaction könnte Payment; Transfer; IncomingTransfer und OutcomingTransfer
+     * sein.
      * gson: gson vorlage
      */
     private String name;
@@ -26,13 +29,14 @@ public class PrivateBank implements Bank {
     private final Map<String, List<Transaction>> accountsToTransactions = new HashMap<>();
     private String directoryName = "json/";
     private Gson gson = new GsonBuilder()
-            // Ermöglicht das Registrieren eines benutzerdefinierten TypeAdapters für die Serialisierung oder Deserialisierung eines bestimmten Typs.
+            // Ermöglicht das Registrieren eines benutzerdefinierten TypeAdapters für die
+            // Serialisierung oder Deserialisierung eines bestimmten Typs.
             .registerTypeAdapter(Transaction.class, new TransactionAdapter())
-            .setPrettyPrinting() //setPrettyPrinting(): Formatiert die JSON-Ausgabe für eine bessere Lesbarkeit.
+            .setPrettyPrinting() // setPrettyPrinting(): Formatiert die JSON-Ausgabe für eine bessere Lesbarkeit.
             .create();
-    //serializeNulls(): Gibt an, ob Null-Werte in der JSON-Ausgabe serialisiert werden sollen.
-    //disableHtmlEscaping(): Verhindert das Escaping von HTML-Zeichen.
-
+    // serializeNulls(): Gibt an, ob Null-Werte in der JSON-Ausgabe serialisiert
+    // werden sollen.
+    // disableHtmlEscaping(): Verhindert das Escaping von HTML-Zeichen.
 
     /**
      * Konstruktor
@@ -48,8 +52,7 @@ public class PrivateBank implements Bank {
         this.directoryName = directoryName;
         setIncomingInterest(incomingInterest);
         setOutgoingInterest(outgoingInterest);
-//        this.readAccounts();
-
+        // this.readAccounts();
 
     }
 
@@ -66,9 +69,9 @@ public class PrivateBank implements Bank {
 
     }
 
-
     /**
-     * Überschreibt die `toString`-Methode, um eine String-Darstellung des Objekts bereitzustellen.
+     * Überschreibt die `toString`-Methode, um eine String-Darstellung des Objekts
+     * bereitzustellen.
      * Diese Methode fasst die wichtigsten Attribute der Klasse zusammen,
      * was nützlich ist für Debugging, Protokollierung oder Ausgabe.
      *
@@ -85,18 +88,22 @@ public class PrivateBank implements Bank {
     }
 
     /**
-     * Überschreibt die `equals`-Methode, um die Gleichheit zweier `PrivateBankV2`-Objekte zu überprüfen.
+     * Überschreibt die `equals`-Methode, um die Gleichheit zweier
+     * `PrivateBankV2`-Objekte zu überprüfen.
      * Zwei Objekte gelten als gleich, wenn:
      * - Sie der gleichen Klasse angehören
-     * - Alle relevanten Attribute (name, incomingInterest, outgoingInterest, accountsToTransactions) übereinstimmen
+     * - Alle relevanten Attribute (name, incomingInterest, outgoingInterest,
+     * accountsToTransactions) übereinstimmen
      *
      * @param obj Das Objekt, mit dem verglichen wird.
      * @return `true`, wenn die Objekte gleich sind, andernfalls `false`.
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         PrivateBank pb = (PrivateBank) obj;
         return Double.compare(pb.incomingInterest, incomingInterest) == 0 &&
                 Double.compare(pb.outgoingInterest, outgoingInterest) == 0 &&
@@ -104,17 +111,20 @@ public class PrivateBank implements Bank {
                 Objects.equals(accountsToTransactions, pb.accountsToTransactions);
     }
 
-
     /**
      * Löscht ein Konto aus der Bank.
      * <p>
-     * Falls das Konto nicht existiert, wird eine {@link AccountDoesNotExistException} ausgelöst.
-     * Diese Methode kann auch eine {@link IOException} werfen, falls ein zugrunde liegender
+     * Falls das Konto nicht existiert, wird eine
+     * {@link AccountDoesNotExistException} ausgelöst.
+     * Diese Methode kann auch eine {@link IOException} werfen, falls ein zugrunde
+     * liegender
      * Ein-/Ausgabefehler auftritt.
      *
      * @param account der Name des zu löschenden Kontos
-     * @throws AccountDoesNotExistException wenn das zu löschende Konto nicht existiert
-     * @throws IOException                  wenn ein Ein-/Ausgabefehler während des Löschvorgangs auftritt
+     * @throws AccountDoesNotExistException wenn das zu löschende Konto nicht
+     *                                      existiert
+     * @throws IOException                  wenn ein Ein-/Ausgabefehler während des
+     *                                      Löschvorgangs auftritt
      */
     @Override
     public void deleteAccount(String account) throws AccountDoesNotExistException, IOException {
@@ -138,13 +148,13 @@ public class PrivateBank implements Bank {
         System.out.println("Das Konto '" + account + "' wurde erfolgreich gelöscht.");
     }
 
-
     /**
      * Gibt eine Liste aller Konten zurück, die von der Bank verwaltet werden.
      * <p>
      * Die Liste enthält die Namen aller derzeit im System verfügbaren Konten.
      *
-     * @return eine {@link List} von {@link String}, die die Namen aller Konten repräsentiert
+     * @return eine {@link List} von {@link String}, die die Namen aller Konten
+     *         repräsentiert
      */
     @Override
     public List<String> getAllAccounts() {
@@ -155,16 +165,15 @@ public class PrivateBank implements Bank {
         return accounts;
     }
 
-
     /**
      * Diese Methode soll alle vorhandenen Konten vom
      * Dateisystem lesen und im accountsToTransactions zur Verfügung stellen
      *
      * @throws IOException Fehler aufgetreten beim Lesen
      */
-    //TODO: richtige stellen aufrufen. WICHTIG!!!!
+    // TODO: richtige stellen aufrufen. WICHTIG!!!!
     public void readAccounts() throws IOException {
-        //wir gehen davon aus, dass die Accounts schon existieren.
+        // wir gehen davon aus, dass die Accounts schon existieren.
         for (Map.Entry<String, List<Transaction>> entry : accountsToTransactions.entrySet()) {
             String accountName = entry.getKey(); // Konto
             String filePath = directoryName + "Konto_" + accountName + ".json";
@@ -180,13 +189,13 @@ public class PrivateBank implements Bank {
                 // Alle Transaktionen für das Konto löschen
                 accountsToTransactions.put(accountName, new ArrayList<>());
 
-                //wir fügen jede einzeln, damit wir auch Duplikate prüfen
+                // wir fügen jede einzeln, damit wir auch Duplikate prüfen
                 for (Transaction transaction : deserializedTransactions) {
 
                     try {
                         this.addTransaction(accountName, transaction);
                     } catch (Exception e) {
-                        //hinweis: es Tritt nur auf, wenn in der datei Duplikate sind.
+                        // hinweis: es Tritt nur auf, wenn in der datei Duplikate sind.
                         throw new Exception(e);
                     }
                 }
@@ -216,12 +225,12 @@ public class PrivateBank implements Bank {
         // List zu einer Array machen, weil der Json nur Array akzeptiert
         Transaction[] transactionArray = getTransactions(account).toArray(Transaction[]::new);
         /*
-        // Wenn keine Transaktionen vorhanden sind, keine Datei erstellen
-        if (transactions.isEmpty()) {
-            System.out.println("Keine Transaktionen für das Konto vorhanden.");
-            return;
-        }
-        */
+         * // Wenn keine Transaktionen vorhanden sind, keine Datei erstellen
+         * if (transactions.isEmpty()) {
+         * System.out.println("Keine Transaktionen für das Konto vorhanden.");
+         * return;
+         * }
+         */
 
         // Erstelle den Dateipfad
         String filePath = this.directoryName + "Konto_" + account + ".json";
@@ -230,7 +239,7 @@ public class PrivateBank implements Bank {
         String json = gson.toJson(transactionArray);
 
         // Schreibe den JSON-String in eine Datei
-        //es wird Überschrieben
+        // es wird Überschrieben
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             writer.write(json);
@@ -247,19 +256,19 @@ public class PrivateBank implements Bank {
      * @param account the account to be added
      * @throws AccountAlreadyExistsException if the account already exists
      */
-    //TODO: DONE
     @Override
-    public void createAccount(String account) throws AccountAlreadyExistsException, IOException, AccountDoesNotExistException {
+    public void createAccount(String account)
+            throws AccountAlreadyExistsException, IOException, AccountDoesNotExistException {
         // containsKey: Überprüfe, ob das Konto bereits in der Map existiert
         // containsKey => ob eine bestimmte Map einen bestimmten Schlüssel (key) enthält
         if (accountsToTransactions.containsKey(account)) {
             throw new AccountAlreadyExistsException("Account already exists: " + account);
         }
-//        this.readAccounts();
+        // this.readAccounts();
         // Füge das Konto mit einer leeren Transaktionsliste hinzu
         accountsToTransactions.put(account, new ArrayList<>());
 
-//        this.readAccounts();
+        // this.readAccounts();
         this.writeAccount(account);
 
     }
@@ -270,16 +279,19 @@ public class PrivateBank implements Bank {
      * Fehler: Konto existiert schon, Transaktion ist doppelt oder ungültig
      *
      * @param account      the account to be added
-     * @param transactions a list of already existing transactions which should be added to the newly created account
+     * @param transactions a list of already existing transactions which should be
+     *                     added to the newly created account
      * @throws AccountAlreadyExistsException    if the account already exists
      * @throws TransactionAlreadyExistException if the transaction already exists
-     * @throws TransactionAttributeException    if the validation check for certain attributes fail
+     * @throws TransactionAttributeException    if the validation check for certain
+     *                                          attributes fail
      * @throws AccountDoesNotExistException
      */
-    //TODO: DONE
+    // TODO: DONE
     @Override
     public void createAccount(String account, List<Transaction> transactions)
-            throws AccountAlreadyExistsException, TransactionAlreadyExistException, TransactionAttributeException, IOException, AccountDoesNotExistException {
+            throws AccountAlreadyExistsException, TransactionAlreadyExistException, TransactionAttributeException,
+            IOException, AccountDoesNotExistException {
         // Überprüfe, ob das Konto bereits existiert
         if (accountsToTransactions.containsKey(account)) {
             throw new AccountAlreadyExistsException("Account already exists: " + account);
@@ -294,10 +306,10 @@ public class PrivateBank implements Bank {
                 throw new TransactionAlreadyExistException("Duplicate transaction detected: " + transaction);
             }
             /*
-            Überprüfe, ob die Transaktion gültig ist
-            Z.B
-            Description und Date darf nicht null und "" (leer) sein.
-            */
+             * Überprüfe, ob die Transaktion gültig ist
+             * Z.B
+             * Description und Date darf nicht null und "" (leer) sein.
+             */
             if (transaction.getDescription() == null || transaction.getDescription().isEmpty()
                     || transaction.getDate() == null || transaction.getDate().isEmpty()) {
                 throw new TransactionAttributeException("Invalid transaction attributes: " + transaction);
@@ -318,7 +330,8 @@ public class PrivateBank implements Bank {
      * Fehler: Konto existiert nicht, Transaktion doppelt oder ungültig.
      *
      * @param account     the account to which the transaction is added
-     * @param transaction the transaction which should be added to the specified account
+     * @param transaction the transaction which should be added to the specified
+     *                    account
      * @throws TransactionAlreadyExistException
      * @throws AccountDoesNotExistException
      * @throws TransactionAttributeException
@@ -326,32 +339,35 @@ public class PrivateBank implements Bank {
      * @throws InvalidOutgoingInterestException
      * @throws IOException
      */
-    //TODO: aufgabestellung DONE
+
     @Override
     public void addTransaction(String account, Transaction transaction)
-            throws TransactionAlreadyExistException, AccountDoesNotExistException, TransactionAttributeException, InvalidIncomingInterestException, InvalidOutgoingInterestException, IOException {
-        // wenn die datei nicht existiert dann haben wir eine
+            throws TransactionAlreadyExistException, AccountDoesNotExistException, TransactionAttributeException,
+            InvalidIncomingInterestException, InvalidOutgoingInterestException, IOException {
 
+        // wenn die datei nicht existiert dann haben wir eine Exception
         if (!(accountsToTransactions.containsKey(account))) {
             throw new AccountDoesNotExistException("Das angegebene Konto existiert nicht.");
         }
 
         /*
-        Überprüfe, ob die Transaktion gültig ist
-        Z.B
-        Description und Date darf nicht null und "" (leer) sein.
-        */
+         * Überprüfe, ob die Transaktion gültig ist
+         * Z.B
+         * Description und Date darf nicht null und "" (leer) sein.
+         */
         if (transaction.getDescription() == null || transaction.getDescription().isEmpty()
                 || transaction.getDate() == null || transaction.getDate().isEmpty()) {
             throw new TransactionAttributeException("Invalid transaction attributes: " + transaction);
         }
 
         // Überprüfen, ob die Transaktion bereits existiert
-        List<Transaction> transactionList = accountsToTransactions.get(account); // Liste der Transaktionen für das Konto
+        List<Transaction> transactionList = accountsToTransactions.get(account); // Liste der Transaktionen für das
+                                                                                 // Konto
         if (transactionList.contains(transaction)) {
             throw new TransactionAlreadyExistException("Die Transaktion existiert bereits im Konto '" + account + "'.");
         }
-        // Wenn es sich um ein Payment handelt, incomingInterest und outgoingInterest setzen
+        // Wenn es sich um ein Payment handelt, incomingInterest und outgoingInterest
+        // setzen
         if (transaction instanceof Payment) {
             Payment payment = (Payment) transaction;
             payment.setIncomingInterest(this.getIncomingInterest()); // Zinsen der Bank setzen
@@ -364,17 +380,21 @@ public class PrivateBank implements Bank {
     }
 
     /**
-     * Removes a transaction from an account. If the transaction does not exist, an exception is
+     * Removes a transaction from an account. If the transaction does not exist, an
+     * exception is
      * thrown.
      * Entfernt eine Transaktion von einem Konto.
      * Fehler: Konto existiert nicht, Transaktion existiert nicht
      *
      * @param account     the account from which the transaction is removed
-     * @param transaction the transaction which is removed from the specified account
-     * @throws AccountDoesNotExistException     if the specified account does not exist
+     * @param transaction the transaction which is removed from the specified
+     *                    account
+     * @throws AccountDoesNotExistException     if the specified account does not
+     *                                          exist
      * @throws TransactionDoesNotExistException if the transaction cannot be found
      */
-    //TODO: DONE
+    
+    // TODO: DONE
     @Override
     public void removeTransaction(String account, Transaction transaction)
             throws AccountDoesNotExistException, TransactionDoesNotExistException, IOException {
@@ -406,7 +426,7 @@ public class PrivateBank implements Bank {
      * @param account     the account from which the transaction is checked
      * @param transaction the transaction to search/look for
      */
-    //TODO: DONE
+    // TODO: DONE
     @Override
     public boolean containsTransaction(String account, Transaction transaction) {
         // Überprüfen, ob das Konto existiert
@@ -429,7 +449,7 @@ public class PrivateBank implements Bank {
      * @return the current account balance
      */
 
-    //TODO: aufgabestellung  => Am ENDE
+    // TODO: aufgabestellung => Am ENDE
     @Override
     public double getAccountBalance(String account) throws AccountDoesNotExistException {
         double balance = 0.0;
@@ -444,7 +464,6 @@ public class PrivateBank implements Bank {
         return balance;
     }
 
-
     /**
      * Returns a list of transactions for an account.
      * Gibt eine Liste aller Transaktionen eines Kontos zurück.
@@ -452,7 +471,7 @@ public class PrivateBank implements Bank {
      * @param account the selected account
      * @return the list of all transactions for the specified account
      */
-    //TODO: DONE
+    // TODO: DONE
     @Override
     public List<Transaction> getTransactions(String account) {
         // Überprüfen, ob das Konto existiert
@@ -465,17 +484,19 @@ public class PrivateBank implements Bank {
     }
 
     /**
-     * Returns a sorted list (-> calculated amounts) of transactions for a specific account. Sorts the list either in ascending or descending order
+     * Returns a sorted list (-> calculated amounts) of transactions for a specific
+     * account. Sorts the list either in ascending or descending order
      * (or empty).
      * Gibt die Transaktionen eines Kontos sortiert zurück (aufsteigend/absteigend).
      * aufsteigend => True => 10;20;30
-     * absteigend  => Flase => 30;20;10
+     * absteigend => Flase => 30;20;10
      *
      * @param account the selected account
-     * @param asc     selects if the transaction list is sorted in ascending or descending order
+     * @param asc     selects if the transaction list is sorted in ascending or
+     *                descending order
      * @return the sorted list of all transactions for the specified account
      */
-    //TODO: DONE
+    // TODO: DONE
     @Override
     public List<Transaction> getTransactionsSorted(String account, boolean asc) {
         // Überprüfen, ob das Konto existiert
@@ -491,8 +512,8 @@ public class PrivateBank implements Bank {
             int comparison = Double.compare(t1.getAmount(), t2.getAmount());
             /*
              * aufsteigend => True => 10;20;30
-             * absteigend  => Flase => 30;20;10
-             * */
+             * absteigend => Flase => 30;20;10
+             */
             return asc ? comparison : -comparison; // Aufsteigend oder absteigend
         });
 
@@ -500,14 +521,16 @@ public class PrivateBank implements Bank {
     }
 
     /**
-     * Returns a list of either positive or negative transactions (-> calculated amounts).
-     * Gibt nur positive (z. B. Einnahmen) oder negative (z. B. Ausgaben) Transaktionen zurück.
+     * Returns a list of either positive or negative transactions (-> calculated
+     * amounts).
+     * Gibt nur positive (z. B. Einnahmen) oder negative (z. B. Ausgaben)
+     * Transaktionen zurück.
      *
      * @param account  the selected account
      * @param positive selects if positive or negative transactions are listed
      * @return the list of all transactions by type
      */
-    //TODO: DONE
+    // TODO: DONE
     @Override
     public List<Transaction> getTransactionsByType(String account, boolean positive) {
         // Überprüfen, ob das Konto existiert
@@ -539,7 +562,6 @@ public class PrivateBank implements Bank {
     public void setDirectoryName(String directoryName) {
         this.directoryName = directoryName;
     }
-
 
     /**
      * Getter-Methode für den Namen der Bank.
@@ -578,9 +600,11 @@ public class PrivateBank implements Bank {
     }
 
     /**
-     * Setzt den eingehenden Zinssatz. Überprüft, ob der Wert zwischen 0 und 1 liegt.
+     * Setzt den eingehenden Zinssatz. Überprüft, ob der Wert zwischen 0 und 1
+     * liegt.
      *
-     * @param incomingInterest der neue eingehende Zinssatz, muss zwischen 0 und 1 liegen
+     * @param incomingInterest der neue eingehende Zinssatz, muss zwischen 0 und 1
+     *                         liegen
      */
     public void setIncomingInterest(double incomingInterest) throws InvalidIncomingInterestException {
         if (incomingInterest > 1 || incomingInterest < 0) {
@@ -591,9 +615,11 @@ public class PrivateBank implements Bank {
     }
 
     /**
-     * Setzt den ausgehenden Zinssatz. Überprüft, ob der Wert zwischen 0 und 1 liegt.
+     * Setzt den ausgehenden Zinssatz. Überprüft, ob der Wert zwischen 0 und 1
+     * liegt.
      *
-     * @param outgoingInterest der neue ausgehende Zinssatz, muss zwischen 0 und 1 liegen
+     * @param outgoingInterest der neue ausgehende Zinssatz, muss zwischen 0 und 1
+     *                         liegen
      */
     public void setOutgoingInterest(double outgoingInterest) throws InvalidOutgoingInterestException {
         if (outgoingInterest > 1 || outgoingInterest < 0) {

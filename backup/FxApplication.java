@@ -13,15 +13,18 @@ public class FxApplication extends Application {
     Button auswaehlenKnopf;
 
     public static void main(String[] args) {
-//        // Zeigt ein Eingabefenster mit der Möglichkeit, Text einzugeben
-//        String eingabe = JOptionPane.showInputDialog(null, "Bitte geben Sie etwas ein:", "Eingabefenster", JOptionPane.QUESTION_MESSAGE);
-//
-//        // Zeigt ein Fenster mit der eingegebenen Information
-//        if (eingabe != null) { // Nutzer hat nicht auf "Abbrechen" geklickt
-//            JOptionPane.showMessageDialog(null, "Sie haben eingegeben: " + eingabe, "Information", JOptionPane.INFORMATION_MESSAGE);
-//        } else {
-//            JOptionPane.showMessageDialog(null, "Keine Eingabe vorgenommen!", "Abbrechen", JOptionPane.WARNING_MESSAGE);
-//        }
+        // // Zeigt ein Eingabefenster mit der Möglichkeit, Text einzugeben
+        // String eingabe = JOptionPane.showInputDialog(null, "Bitte geben Sie etwas
+        // ein:", "Eingabefenster", JOptionPane.QUESTION_MESSAGE);
+        //
+        // // Zeigt ein Fenster mit der eingegebenen Information
+        // if (eingabe != null) { // Nutzer hat nicht auf "Abbrechen" geklickt
+        // JOptionPane.showMessageDialog(null, "Sie haben eingegeben: " + eingabe,
+        // "Information", JOptionPane.INFORMATION_MESSAGE);
+        // } else {
+        // JOptionPane.showMessageDialog(null, "Keine Eingabe vorgenommen!",
+        // "Abbrechen", JOptionPane.WARNING_MESSAGE);
+        // }
 
         launch(args); // Startet die JavaFX-Anwendung
     }
@@ -30,7 +33,7 @@ public class FxApplication extends Application {
     public void start(Stage primaryStage) {
         try {
             // Lade die FXML-Datei
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Startseite.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Startseite-Anzz.fxml"));
             Scene s1 = fxmlLoader.load(); // Das Root-Element aus der FXML-Datei
 
             primaryStage.setScene(s1);

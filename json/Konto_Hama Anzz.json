@@ -1,0 +1,22 @@
+[
+  {
+    "CLASSNAME": "Payment",
+    "INSTANCE": {
+      "incomingInterest": 0.1,
+      "outgoingInterest": 0.1,
+      "date": "Heute",
+      "amount": 1000.0,
+      "description": "Beschreibung"
+    }
+  },
+  {
+    "CLASSNAME": "OutgoingTransfer",
+    "INSTANCE": {
+      "sender": "Hama Anzz",
+      "recipient": "Anzz Konto",
+      "date": "2026-08-13",
+      "amount": 100.0,
+      "description": "Beschreibung"
+    }
+  }
+]
