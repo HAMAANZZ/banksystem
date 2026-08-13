@@ -52,7 +52,19 @@ public class PrivateBank implements Bank {
         this.directoryName = directoryName;
         setIncomingInterest(incomingInterest);
         setOutgoingInterest(outgoingInterest);
-        // this.readAccounts();
+        // Prüfen, ob der JSON Ordner existiert
+        File directory = new File(directoryName);
+
+        if (!directory.exists()) {
+            if (!directory.mkdirs()) {
+                throw new IOException(
+                        "Der Ordner konnte nicht erstellt werden: "
+                                + directoryName);
+            }
+        }
+
+        // Vorhandene Accounts aus JSON laden
+        readAccounts();
 
     }
 
@@ -172,35 +184,67 @@ public class PrivateBank implements Bank {
      * @throws IOException Fehler aufgetreten beim Lesen
      */
     public void readAccounts() throws IOException {
-        // wir gehen davon aus, dass die Accounts schon existieren.
-        for (Map.Entry<String, List<Transaction>> entry : accountsToTransactions.entrySet()) {
-            String accountName = entry.getKey(); // Konto
-            String filePath = directoryName + "Konto_" + accountName + ".json";
-            try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-                // Lies den gesamten Inhalt der Datei in einen String
-                StringBuilder jsonContent = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    jsonContent.append(line);
+
+        File directory = new File(this.directoryName);
+
+        // Alle Dateien suchen, die wie Konto_NAME.json heißen
+        File[] accountFiles = directory.listFiles(
+                (dir, fileName) -> fileName.startsWith("Konto_")
+                        && fileName.endsWith(".json"));
+
+        // Falls keine Dateien vorhanden sind
+        if (accountFiles == null) {
+            return;
+        }
+
+        // Map leeren, bevor neu geladen wird
+        accountsToTransactions.clear();
+
+        for (File file : accountFiles) {
+
+            String fileName = file.getName();
+
+            // Beispiel:
+            // Konto_MusterMann.json
+            // wird zu:
+            // MusterMann
+            String accountName = fileName.substring(
+                    "Konto_".length(),
+                    fileName.length() - ".json".length());
+
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+
+                Transaction[] transactions = gson.fromJson(
+                        reader,
+                        Transaction[].class);
+
+                List<Transaction> transactionList = new ArrayList<>();
+
+                // Eine leere JSON Datei kann null ergeben
+                if (transactions != null) {
+                    transactionList.addAll(
+                            Arrays.asList(transactions));
                 }
-                Transaction[] deserializedTransactions = gson.fromJson("" + jsonContent, Transaction[].class);
 
-                // Alle Transaktionen für das Konto löschen
-                accountsToTransactions.put(accountName, new ArrayList<>());
+                accountsToTransactions.put(
+                        accountName,
+                        transactionList);
 
-                // wir fügen jede einzeln, damit wir auch Duplikate prüfen
-                for (Transaction transaction : deserializedTransactions) {
+                System.out.println(
+                        "Account geladen: "
+                                + accountName
+                                + " ("
+                                + transactionList.size()
+                                + " Transaktionen)");
 
-                    try {
-                        this.addTransaction(accountName, transaction);
-                    } catch (Exception e) {
-                        // hinweis: es Tritt nur auf, wenn in der datei Duplikate sind.
-                        throw new Exception(e);
-                    }
-                }
+            } catch (JsonParseException e) {
 
-            } catch (Exception e) {
-                throw new IOException("Fehler beim Lesen der Datei: " + e.getMessage());
+                throw new IOException(
+                        "Fehler beim Lesen von "
+                                + file.getName()
+                                + ": "
+                                + e.getMessage(),
+                        e);
             }
         }
     }
@@ -263,11 +307,10 @@ public class PrivateBank implements Bank {
         if (accountsToTransactions.containsKey(account)) {
             throw new AccountAlreadyExistsException("Account already exists: " + account);
         }
-        // this.readAccounts();
+
         // Füge das Konto mit einer leeren Transaktionsliste hinzu
         accountsToTransactions.put(account, new ArrayList<>());
 
-        // this.readAccounts();
         this.writeAccount(account);
 
     }

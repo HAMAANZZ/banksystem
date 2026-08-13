@@ -11,7 +11,7 @@ import javax.swing.*;
 import java.io.IOException;
 
 /**
- *  StartseiteController
+ * StartseiteController
  */
 public class StartseiteController extends Controller {
 
@@ -31,6 +31,7 @@ public class StartseiteController extends Controller {
      * Konstrucktor
      */
     public StartseiteController() {
+
     }
 
     /**
@@ -51,7 +52,8 @@ public class StartseiteController extends Controller {
      */
     private void erstelleNeuenAccount() {
 
-        String accountName = JOptionPane.showInputDialog(null, "Bitte geben Sie den neuen Accountnamen ein:", "Neuen Account hinzufügen", JOptionPane.QUESTION_MESSAGE);
+        String accountName = JOptionPane.showInputDialog(null, "Bitte geben Sie den neuen Accountnamen ein:",
+                "Neuen Account hinzufügen", JOptionPane.QUESTION_MESSAGE);
 
         if (accountName == null) {
             // Benutzer hat auf "Abbrechen" geklickt, keine Aktion notwendig
@@ -63,17 +65,23 @@ public class StartseiteController extends Controller {
             try {
                 bank.createAccount(accountName.trim());
                 listViewAcconts.getItems().add(accountName);
+
             } catch (AccountAlreadyExistsException e) {
-                JOptionPane.showMessageDialog(null, "AccountAlreadyExistsException: " + e.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "AccountAlreadyExistsException: " + e.getMessage(), "Fehler",
+                        JOptionPane.ERROR_MESSAGE);
             } catch (AccountDoesNotExistException e) {
-                JOptionPane.showMessageDialog(null, "AccountDoesNotExistException: " + e.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "AccountDoesNotExistException: " + e.getMessage(), "Fehler",
+                        JOptionPane.ERROR_MESSAGE);
             } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "IOException: " + e.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "IOException: " + e.getMessage(), "Fehler",
+                        JOptionPane.ERROR_MESSAGE);
             }
+
         } else {
-            JOptionPane.showMessageDialog(null, "Kein gültiger Accountname eingegeben!", "Abbruch", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Kein gültiger Accountname eingegeben!", "Abbruch",
+                    JOptionPane.WARNING_MESSAGE);
         }
-        System.out.println("Erstellen Erfolgreich");
+        // System.out.println("Erstellen Erfolgreich");
     }
 
     /**
@@ -101,8 +109,7 @@ public class StartseiteController extends Controller {
                     "Möchten Sie den Account '" + selectedItem + "' wirklich löschen?",
                     "Account löschen",
                     JOptionPane.YES_NO_OPTION,
-                    JOptionPane.WARNING_MESSAGE
-            );
+                    JOptionPane.WARNING_MESSAGE);
 
             if (result == JOptionPane.YES_OPTION) {
                 try {
@@ -114,30 +121,26 @@ public class StartseiteController extends Controller {
                             null,
                             "Der Account '" + selectedItem + "' wurde erfolgreich gelöscht.",
                             "Erfolg",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
+                            JOptionPane.INFORMATION_MESSAGE);
                 } catch (AccountDoesNotExistException e) {
                     JOptionPane.showMessageDialog(
                             null,
                             "Fehler: " + e.getMessage(),
                             "Account existiert nicht",
-                            JOptionPane.ERROR_MESSAGE
-                    );
+                            JOptionPane.ERROR_MESSAGE);
                 } catch (IOException e) {
                     JOptionPane.showMessageDialog(
                             null,
                             "Fehler beim Löschen des Accounts Datei: " + e.getMessage(),
                             "Fehler",
-                            JOptionPane.ERROR_MESSAGE
-                    );
+                            JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 JOptionPane.showMessageDialog(
                         null,
                         "Löschvorgang wurde abgebrochen.",
                         "Abgebrochen",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
+                        JOptionPane.INFORMATION_MESSAGE);
             }
         } else {
             // Warnung, wenn kein Account ausgewählt wurde
@@ -145,8 +148,7 @@ public class StartseiteController extends Controller {
                     null,
                     "Bitte wählen Sie einen Account aus, den Sie löschen möchten.",
                     "Kein Account ausgewählt",
-                    JOptionPane.WARNING_MESSAGE
-            );
+                    JOptionPane.WARNING_MESSAGE);
         }
     }
 

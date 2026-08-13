@@ -63,7 +63,7 @@ public class AccountViewController extends Controller {
      * Zurück
      */
     private void backKnopf() {
-        System.out.println("Back Knopf");
+        // System.out.println("Back Knopf");
 
         this.loadScene("/Startseite.fxml", new StartseiteController());
 
@@ -72,7 +72,7 @@ public class AccountViewController extends Controller {
     /**
      * PaymentErstellen
      */
-    //JFrame benutzt
+    // JFrame benutzt
     public void PaymentErstellen() {
         Payment p = null;
         // Erstelle Eingabefelder
@@ -83,7 +83,7 @@ public class AccountViewController extends Controller {
         // Panel für Eingaben erstellen
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(3, 2, 5, 5));
-        panel.add(new JLabel("Date :"));
+        panel.add(new JLabel("Date (yyyy-mm-dd):"));
         panel.add(dateField);
         panel.add(new JLabel("Amount:"));
         panel.add(amountField);
@@ -98,8 +98,9 @@ public class AccountViewController extends Controller {
         if (result == JOptionPane.OK_OPTION) {
             String date = dateField.getText();
             double amount = 0;
-            String description = descriptionField.getText();
-            //es muss einen int sein.
+            String description = descriptionField.getText() + "";
+
+            // es muss einen int sein.
             try {
                 amount = Double.parseDouble(amountField.getText());
             } catch (NumberFormatException e) {
@@ -112,27 +113,34 @@ public class AccountViewController extends Controller {
             try {
                 p = new Payment(date, amount, description);
             } catch (NegativeAmountException e) {
-                JOptionPane.showMessageDialog(null, "NegativeAmountException: " + e.getMessage(), "NegativeAmountException", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "NegativeAmountException: " + e.getMessage(),
+                        "NegativeAmountException", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             try {
                 bank.addTransaction(accountName, p);
             } catch (TransactionAlreadyExistException e) {
-                JOptionPane.showMessageDialog(null, "TransactionAlreadyExistException: " + e.getMessage(), "TransactionAlreadyExistException", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "TransactionAlreadyExistException: " + e.getMessage(),
+                        "TransactionAlreadyExistException", JOptionPane.ERROR_MESSAGE);
             } catch (AccountDoesNotExistException e) {
-                JOptionPane.showMessageDialog(null, "AccountDoesNotExistException: " + e.getMessage(), "AccountDoesNotExistException", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "AccountDoesNotExistException: " + e.getMessage(),
+                        "AccountDoesNotExistException", JOptionPane.ERROR_MESSAGE);
 
             } catch (TransactionAttributeException e) {
-                JOptionPane.showMessageDialog(null, "TransactionAttributeException: " + e.getMessage(), "TransactionAttributeException", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "TransactionAttributeException: " + e.getMessage(),
+                        "TransactionAttributeException", JOptionPane.ERROR_MESSAGE);
 
             } catch (InvalidIncomingInterestException e) {
-                JOptionPane.showMessageDialog(null, "InvalidIncomingInterestException: " + e.getMessage(), "InvalidIncomingInterestException", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "InvalidIncomingInterestException: " + e.getMessage(),
+                        "InvalidIncomingInterestException", JOptionPane.ERROR_MESSAGE);
 
             } catch (InvalidOutgoingInterestException e) {
-                JOptionPane.showMessageDialog(null, "InvalidOutgoingInterestException: " + e.getMessage(), "InvalidOutgoingInterestException", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "InvalidOutgoingInterestException: " + e.getMessage(),
+                        "InvalidOutgoingInterestException", JOptionPane.ERROR_MESSAGE);
             } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "IOException: " + e.getMessage(), "IOException", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "IOException: " + e.getMessage(), "IOException",
+                        JOptionPane.ERROR_MESSAGE);
             }
         } else {
             JOptionPane.showMessageDialog(null,
@@ -174,7 +182,7 @@ public class AccountViewController extends Controller {
         // Überprüfe, ob OK geklickt wurde
         if (result == JOptionPane.OK_OPTION) {
             String date = dateField.getText();
-            String description = descriptionField.getText();
+            String description = descriptionField.getText() + "";
             String sender = senderField.getText();
             String recipient = recipientField.getText();
 
@@ -182,56 +190,71 @@ public class AccountViewController extends Controller {
             try {
                 amount = Double.parseDouble(amountField.getText());
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "NumberFormatException: " + e.getMessage(), "TransactionAlreadyExistException", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "NumberFormatException: " + e.getMessage(),
+                        "TransactionAlreadyExistException", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             if (sender.equals(accountName)) {
-                //Benutz = sender
+                // Benutz = sender
                 try {
                     OutgoingTransfer out = new OutgoingTransfer(date, amount, description, sender, recipient);
                     this.bank.addTransaction(accountName, out);
                 } catch (NegativeAmountException e) {
-                    JOptionPane.showMessageDialog(null, "TransactionAlreadyExistException: " + e.getMessage(), "TransactionAlreadyExistException", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "TransactionAlreadyExistException: " + e.getMessage(),
+                            "TransactionAlreadyExistException", JOptionPane.ERROR_MESSAGE);
                 } catch (TransactionAlreadyExistException e) {
-                    JOptionPane.showMessageDialog(null, "TransactionAlreadyExistException: " + e.getMessage(), "TransactionAlreadyExistException", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "TransactionAlreadyExistException: " + e.getMessage(),
+                            "TransactionAlreadyExistException", JOptionPane.ERROR_MESSAGE);
                 } catch (AccountDoesNotExistException e) {
-                    JOptionPane.showMessageDialog(null, "AccountDoesNotExistException: " + e.getMessage(), "AccountDoesNotExistException", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "AccountDoesNotExistException: " + e.getMessage(),
+                            "AccountDoesNotExistException", JOptionPane.ERROR_MESSAGE);
 
                 } catch (TransactionAttributeException e) {
-                    JOptionPane.showMessageDialog(null, "TransactionAttributeException: " + e.getMessage(), "TransactionAttributeException", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "TransactionAttributeException: " + e.getMessage(),
+                            "TransactionAttributeException", JOptionPane.ERROR_MESSAGE);
 
                 } catch (InvalidIncomingInterestException e) {
-                    JOptionPane.showMessageDialog(null, "InvalidIncomingInterestException: " + e.getMessage(), "InvalidIncomingInterestException", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "InvalidIncomingInterestException: " + e.getMessage(),
+                            "InvalidIncomingInterestException", JOptionPane.ERROR_MESSAGE);
 
                 } catch (InvalidOutgoingInterestException e) {
-                    JOptionPane.showMessageDialog(null, "InvalidOutgoingInterestException: " + e.getMessage(), "InvalidOutgoingInterestException", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "InvalidOutgoingInterestException: " + e.getMessage(),
+                            "InvalidOutgoingInterestException", JOptionPane.ERROR_MESSAGE);
                 } catch (IOException e) {
-                    JOptionPane.showMessageDialog(null, "IOException: " + e.getMessage(), "IOException", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "IOException: " + e.getMessage(), "IOException",
+                            JOptionPane.ERROR_MESSAGE);
                 }
 
             } else if (recipient.equals(accountName)) {
-                //Benutz = empfänger
+                // Benutz = empfänger
                 try {
                     IncomingTransfer in = new IncomingTransfer(date, amount, description, sender, recipient);
                     this.bank.addTransaction(accountName, in);
                 } catch (NegativeAmountException e) {
-                    JOptionPane.showMessageDialog(null, "TransactionAlreadyExistException: " + e.getMessage(), "TransactionAlreadyExistException", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "TransactionAlreadyExistException: " + e.getMessage(),
+                            "TransactionAlreadyExistException", JOptionPane.ERROR_MESSAGE);
                 } catch (TransactionAlreadyExistException e) {
-                    JOptionPane.showMessageDialog(null, "TransactionAlreadyExistException: " + e.getMessage(), "TransactionAlreadyExistException", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "TransactionAlreadyExistException: " + e.getMessage(),
+                            "TransactionAlreadyExistException", JOptionPane.ERROR_MESSAGE);
                 } catch (AccountDoesNotExistException e) {
-                    JOptionPane.showMessageDialog(null, "AccountDoesNotExistException: " + e.getMessage(), "AccountDoesNotExistException", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "AccountDoesNotExistException: " + e.getMessage(),
+                            "AccountDoesNotExistException", JOptionPane.ERROR_MESSAGE);
 
                 } catch (TransactionAttributeException e) {
-                    JOptionPane.showMessageDialog(null, "TransactionAttributeException: " + e.getMessage(), "TransactionAttributeException", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "TransactionAttributeException: " + e.getMessage(),
+                            "TransactionAttributeException", JOptionPane.ERROR_MESSAGE);
 
                 } catch (InvalidIncomingInterestException e) {
-                    JOptionPane.showMessageDialog(null, "InvalidIncomingInterestException: " + e.getMessage(), "InvalidIncomingInterestException", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "InvalidIncomingInterestException: " + e.getMessage(),
+                            "InvalidIncomingInterestException", JOptionPane.ERROR_MESSAGE);
 
                 } catch (InvalidOutgoingInterestException e) {
-                    JOptionPane.showMessageDialog(null, "InvalidOutgoingInterestException: " + e.getMessage(), "InvalidOutgoingInterestException", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "InvalidOutgoingInterestException: " + e.getMessage(),
+                            "InvalidOutgoingInterestException", JOptionPane.ERROR_MESSAGE);
                 } catch (IOException e) {
-                    JOptionPane.showMessageDialog(null, "IOException: " + e.getMessage(), "IOException", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "IOException: " + e.getMessage(), "IOException",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 JOptionPane.showMessageDialog(null,
@@ -253,7 +276,6 @@ public class AccountViewController extends Controller {
      */
     public void menuLoeschen() {
 
-
         String selectedItem = TrasaktionenListeView.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
 
@@ -263,8 +285,7 @@ public class AccountViewController extends Controller {
                     "Möchten Sie den Trasaktionen '" + selectedItem + "' wirklich löschen?",
                     "Account löschen",
                     JOptionPane.YES_NO_OPTION,
-                    JOptionPane.WARNING_MESSAGE
-            );
+                    JOptionPane.WARNING_MESSAGE);
 
             if (result == JOptionPane.YES_OPTION) {
                 try {
@@ -275,29 +296,25 @@ public class AccountViewController extends Controller {
                         }
                     }
 
-
                     JOptionPane.showMessageDialog(
                             null,
                             "Der Account '" + selectedItem + "' wurde erfolgreich gelöscht.",
                             "Erfolg",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
+                            JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception e) {
 
                     JOptionPane.showMessageDialog(
                             null,
                             "Fehler beim Löschen des Trasaktionen: " + e.getMessage(),
                             "Fehler",
-                            JOptionPane.ERROR_MESSAGE
-                    );
+                            JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 JOptionPane.showMessageDialog(
                         null,
                         "Löschvorgang wurde abgebrochen.",
                         "Löschvorgang",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
+                        JOptionPane.INFORMATION_MESSAGE);
             }
 
         } else {
@@ -306,8 +323,7 @@ public class AccountViewController extends Controller {
                     null,
                     "Bitte wählen Sie einen Account aus, den Sie löschen möchten.",
                     "Kein Account ausgewählt",
-                    JOptionPane.WARNING_MESSAGE
-            );
+                    JOptionPane.WARNING_MESSAGE);
         }
         menuAktualisieren();
     }
@@ -325,7 +341,8 @@ public class AccountViewController extends Controller {
         try {
             AccountDetails.setText("Name: " + accountName + "\n" + "Balance: " + bank.getAccountBalance(accountName));
         } catch (AccountDoesNotExistException e) {
-            JOptionPane.showMessageDialog(null, "AccountDoesNotExistException: " + e.getMessage(), "Fehler", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "AccountDoesNotExistException: " + e.getMessage(), "Fehler",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 

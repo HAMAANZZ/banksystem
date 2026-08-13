@@ -1,8 +1,5 @@
 package ui;
 
-import bank.IncomingTransfer;
-import bank.OutgoingTransfer;
-import bank.Payment;
 import bank.PrivateBank;
 import javafx.application.Application;
 import javafx.fxml.FXML;
@@ -11,7 +8,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 public class FxApplication extends Application {
 
     @FXML
@@ -21,31 +17,34 @@ public class FxApplication extends Application {
         launch(args); // Startet die JavaFX-Anwendung
     }
 
-
-    @Override
     public void start(Stage stage) throws Exception {
 
-        try {
+        // Hauptfenster speichern
+        Controller.stage = stage;
 
-            Controller.stage = stage;
-            Controller.bank = new PrivateBank("bank", 0.1, 0.1, "json/");
-            Controller.bank.createAccount("Anzz Konto");
-            Controller.bank.addTransaction("Anzz Konto",new Payment("Date",100,"Beschreibung"));
-            Controller.bank.addTransaction("Anzz Konto",new IncomingTransfer("Date",50,"Beschreibung"));
-            Controller.bank.addTransaction("Anzz Konto",new OutgoingTransfer("Date",50,"Beschreibung"));
+        // Bank erstellen
+        // Dabei werden jetzt automatisch
+        // vorhandene JSON Accounts geladen
+        Controller.bank = new PrivateBank(
+                "bank",
+                0.1,
+                0.1,
+                "json/");
 
-            StartseiteController controller = new StartseiteController();
+        // Controller für Startseite erstellen
+        StartseiteController controller = new StartseiteController();
 
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("Startseite.fxml"));
-            loader.setController(controller);
+        // Startseite laden
+        FXMLLoader loader = new FXMLLoader(
+                FxApplication.class.getResource(
+                        "/Startseite.fxml"));
 
-            Scene scene = new Scene(loader.load());
-            stage.setScene(scene);
-            stage.setTitle("Startseite");
-            stage.show();
+        loader.setController(controller);
 
-        } catch (IOException e) {
-            e.printStackTrace(); // Fehlerprotokoll, falls die Datei nicht geladen werden kann
-        }
+        Scene scene = new Scene(loader.load());
+
+        stage.setScene(scene);
+        stage.setTitle("Startseite");
+        stage.show();
     }
 }
