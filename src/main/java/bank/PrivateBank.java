@@ -171,7 +171,6 @@ public class PrivateBank implements Bank {
      *
      * @throws IOException Fehler aufgetreten beim Lesen
      */
-    // TODO: richtige stellen aufrufen. WICHTIG!!!!
     public void readAccounts() throws IOException {
         // wir gehen davon aus, dass die Accounts schon existieren.
         for (Map.Entry<String, List<Transaction>> entry : accountsToTransactions.entrySet()) {
@@ -287,7 +286,7 @@ public class PrivateBank implements Bank {
      *                                          attributes fail
      * @throws AccountDoesNotExistException
      */
-    // TODO: DONE
+
     @Override
     public void createAccount(String account, List<Transaction> transactions)
             throws AccountAlreadyExistsException, TransactionAlreadyExistException, TransactionAttributeException,
@@ -393,8 +392,7 @@ public class PrivateBank implements Bank {
      *                                          exist
      * @throws TransactionDoesNotExistException if the transaction cannot be found
      */
-    
-    // TODO: DONE
+
     @Override
     public void removeTransaction(String account, Transaction transaction)
             throws AccountDoesNotExistException, TransactionDoesNotExistException, IOException {
@@ -426,7 +424,6 @@ public class PrivateBank implements Bank {
      * @param account     the account from which the transaction is checked
      * @param transaction the transaction to search/look for
      */
-    // TODO: DONE
     @Override
     public boolean containsTransaction(String account, Transaction transaction) {
         // Überprüfen, ob das Konto existiert
@@ -449,7 +446,6 @@ public class PrivateBank implements Bank {
      * @return the current account balance
      */
 
-    // TODO: aufgabestellung => Am ENDE
     @Override
     public double getAccountBalance(String account) throws AccountDoesNotExistException {
         double balance = 0.0;
@@ -471,7 +467,6 @@ public class PrivateBank implements Bank {
      * @param account the selected account
      * @return the list of all transactions for the specified account
      */
-    // TODO: DONE
     @Override
     public List<Transaction> getTransactions(String account) {
         // Überprüfen, ob das Konto existiert
@@ -496,7 +491,6 @@ public class PrivateBank implements Bank {
      *                descending order
      * @return the sorted list of all transactions for the specified account
      */
-    // TODO: DONE
     @Override
     public List<Transaction> getTransactionsSorted(String account, boolean asc) {
         // Überprüfen, ob das Konto existiert
@@ -530,7 +524,7 @@ public class PrivateBank implements Bank {
      * @param positive selects if positive or negative transactions are listed
      * @return the list of all transactions by type
      */
-    // TODO: DONE
+
     @Override
     public List<Transaction> getTransactionsByType(String account, boolean positive) {
         // Überprüfen, ob das Konto existiert

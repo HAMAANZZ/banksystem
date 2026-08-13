@@ -15,7 +15,6 @@ public class IncomingTransfer extends Transfer {
      *
      * @return der Betrag der Überweisung
      */
-    //TODO: in Praktikum fragen: hat Transfer eigentlich Zinsen?
     @Override
     public double calculate() {
 
@@ -43,6 +42,7 @@ public class IncomingTransfer extends Transfer {
      * @param sender      der Sender der Überweisung
      * @param recipient   der Empfänger der Überweisung
      */
+    
     public IncomingTransfer(String date, double amount, String description, String sender, String recipient) throws NegativeAmountException {
         super(date, amount, description, sender, recipient);
     }

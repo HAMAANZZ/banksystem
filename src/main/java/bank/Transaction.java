@@ -4,12 +4,15 @@ import bank.exceptions.*;
 
 /**
  * Von abstract können wir keine objekte davon machen.
- * deswegen wenn wir implements machen, dann müssen wir die methode in CalculateBill nicht überschreiben.
+ * deswegen wenn wir implements machen, dann müssen wir die methode in
+ * CalculateBill nicht überschreiben.
  * denn das wird in KinderClasse gemacht.
- * wenn wir eine methode aus der CalculateBill aufrufen, dann wird die methode aus der kinderClasse aufgerufen.
+ * wenn wir eine methode aus der CalculateBill aufrufen, dann wird die methode
+ * aus der kinderClasse aufgerufen.
  * <p>
  * <p>
- * Abstrakte Klasse, die allgemeine Eigenschaften und Methoden einer Transaktion definiert.
+ * Abstrakte Klasse, die allgemeine Eigenschaften und Methoden einer Transaktion
+ * definiert.
  * Von dieser Klasse können keine Objekte direkt erstellt werden.
  */
 public abstract class Transaction implements CalculateBill {
@@ -20,7 +23,7 @@ public abstract class Transaction implements CalculateBill {
      */
     protected String date;
     protected double amount;
-    protected String description;
+    protected String description = "";
 
     /**
      * Konstruktor zur Erstellung einer neuen Transaktion.
@@ -29,6 +32,7 @@ public abstract class Transaction implements CalculateBill {
      * @param amount      der Betrag der Transaktion
      * @param description die Beschreibung der Transaktion
      */
+
     public Transaction(String date, double amount, String description) throws NegativeAmountException {
         this.date = date;
         this.setAmount(amount);
@@ -41,9 +45,11 @@ public abstract class Transaction implements CalculateBill {
      *
      * @return eine textuelle Darstellung der Transaktion
      */
+    
     @Override
     public String toString() {
-        return "Transaction{ " + "date= " + date + ", amount= " + amount + ", Calculate= " + calculate() + ", description= " + description + '}';
+        return "Transaction{ " + "date= " + date + ", amount= " + amount + ", Calculate= " + calculate()
+                + ", description= " + description + '}';
     }
 
     /**
@@ -54,8 +60,9 @@ public abstract class Transaction implements CalculateBill {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;                        // Prüft, ob es sich um dasselbe Objekt handelt
-        if (obj == null || getClass() != obj.getClass()) {   // Prüft auf null und gleiche Klasse
+        if (this == obj)
+            return true; // Prüft, ob es sich um dasselbe Objekt handelt
+        if (obj == null || getClass() != obj.getClass()) { // Prüft auf null und gleiche Klasse
             return false;
         }
         Transaction tr = (Transaction) obj;

@@ -1,0 +1,38 @@
+
+
+
+Kurz:
+
+Dein JavaFX Projekt behalten
+Neues Spring Boot Backend erstellen
+PostgreSQL verbinden
+Konten und Transaktionen in PostgreSQL speichern
+REST API bauen, zum Beispiel:
+GET /api/accounts
+POST /api/accounts
+POST /api/transfers
+JavaFX ruft diese API statt PrivateBank direkt auf
+Danach deine Python Betrugserkennung als kleine API starten
+Spring Boot fragt bei jeder Überweisung die Python KI nach dem Risiko
+Später alles mit Docker starten
+
+Am Ende:
+
+JavaFX
+   ↓
+Spring Boot
+   ↓
+PostgreSQL
+
+Spring Boot
+   ↓
+Python KI
+
+Ich würde anfangen mit: Spring Boot erstellen → PostgreSQL verbinden → GET /api/accounts bauen.
+
+
+
+
+
+gelernt:
+Meine Kommentar damals waren sehr gut.
