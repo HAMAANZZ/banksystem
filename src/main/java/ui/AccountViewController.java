@@ -73,81 +73,240 @@ public class AccountViewController extends Controller {
      * PaymentErstellen
      */
     // JFrame benutzt
+    /**
+     * Erstellt ein neues Payment.
+     *
+     * Positive Beträge = Einnahmen
+     * Negative Beträge = Ausgaben
+     */
     public void PaymentErstellen() {
-        Payment p = null;
-        // Erstelle Eingabefelder
+
+        // --------------------------------------------------------
+        // 1. Eingabefelder erstellen
+        // --------------------------------------------------------
+
         JTextField dateField = new JTextField(10);
         JTextField amountField = new JTextField(10);
         JTextField descriptionField = new JTextField(10);
 
-        // Panel für Eingaben erstellen
+        // --------------------------------------------------------
+        // 2. Eingabefenster erstellen
+        // --------------------------------------------------------
+
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(3, 2, 5, 5));
+
+        panel.setLayout(
+                new GridLayout(
+                        3,
+                        2,
+                        5,
+                        5));
+
         panel.add(new JLabel("Date (yyyy-mm-dd):"));
         panel.add(dateField);
+
         panel.add(new JLabel("Amount:"));
         panel.add(amountField);
+
         panel.add(new JLabel("Description:"));
         panel.add(descriptionField);
 
-        // Zeige das Dialogfenster
-        int result = JOptionPane.showConfirmDialog(null, panel,
-                "Input Dialog", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        // --------------------------------------------------------
+        // 3. Dialog anzeigen
+        // --------------------------------------------------------
 
-        // Überprüfe, ob OK geklickt wurde
-        if (result == JOptionPane.OK_OPTION) {
-            String date = dateField.getText();
-            double amount = 0;
-            String description = descriptionField.getText() + "";
+        int result = JOptionPane.showConfirmDialog(
+                null,
+                panel,
+                "Payment erstellen",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE);
 
-            // es muss einen int sein.
-            try {
-                amount = Double.parseDouble(amountField.getText());
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null,
-                        "Invalid amount entered. Please enter a valid number.",
-                        "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            try {
-                p = new Payment(date, amount, description);
-            } catch (NegativeAmountException e) {
-                JOptionPane.showMessageDialog(null, "NegativeAmountException: " + e.getMessage(),
-                        "NegativeAmountException", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            try {
-                bank.addTransaction(accountName, p);
-            } catch (TransactionAlreadyExistException e) {
-                JOptionPane.showMessageDialog(null, "TransactionAlreadyExistException: " + e.getMessage(),
-                        "TransactionAlreadyExistException", JOptionPane.ERROR_MESSAGE);
-            } catch (AccountDoesNotExistException e) {
-                JOptionPane.showMessageDialog(null, "AccountDoesNotExistException: " + e.getMessage(),
-                        "AccountDoesNotExistException", JOptionPane.ERROR_MESSAGE);
-
-            } catch (TransactionAttributeException e) {
-                JOptionPane.showMessageDialog(null, "TransactionAttributeException: " + e.getMessage(),
-                        "TransactionAttributeException", JOptionPane.ERROR_MESSAGE);
-
-            } catch (InvalidIncomingInterestException e) {
-                JOptionPane.showMessageDialog(null, "InvalidIncomingInterestException: " + e.getMessage(),
-                        "InvalidIncomingInterestException", JOptionPane.ERROR_MESSAGE);
-
-            } catch (InvalidOutgoingInterestException e) {
-                JOptionPane.showMessageDialog(null, "InvalidOutgoingInterestException: " + e.getMessage(),
-                        "InvalidOutgoingInterestException", JOptionPane.ERROR_MESSAGE);
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "IOException: " + e.getMessage(), "IOException",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        } else {
-            JOptionPane.showMessageDialog(null,
-                    "Input canceled.",
-                    "Dialog Canceled", JOptionPane.INFORMATION_MESSAGE);
+        // Benutzer hat abgebrochen
+        if (result != JOptionPane.OK_OPTION) {
+            return;
         }
-        menuAktualisieren();
+
+        // --------------------------------------------------------
+        // 4. Eingaben auslesen
+        // --------------------------------------------------------
+
+        String date = dateField.getText().trim();
+
+        String description = descriptionField.getText().trim();
+
+        // --------------------------------------------------------
+        // 5. Prüfen, ob Datum leer ist
+        // --------------------------------------------------------
+
+        if (date.isEmpty()) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Das Datum darf nicht leer sein.",
+                    "Ungültiges Datum",
+                    JOptionPane.WARNING_MESSAGE);
+
+            return;
+        }
+
+        // --------------------------------------------------------
+        // 6. Prüfen, ob Beschreibung leer ist
+        // --------------------------------------------------------
+
+        if (description.isEmpty()) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Die Beschreibung darf nicht leer sein.",
+                    "Ungültige Beschreibung",
+                    JOptionPane.WARNING_MESSAGE);
+
+            return;
+        }
+
+        // --------------------------------------------------------
+        // 7. Betrag einlesen
+        // --------------------------------------------------------
+
+        double amount;
+
+        try {
+
+            amount = Double.parseDouble(
+                    amountField
+                            .getText()
+                            .trim());
+
+        } catch (NumberFormatException e) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Bitte einen gültigen Betrag eingeben.",
+                    "Ungültiger Betrag",
+                    JOptionPane.WARNING_MESSAGE);
+
+            return;
+        }
+
+        // --------------------------------------------------------
+        // 8. NaN und Infinity verhindern
+        // --------------------------------------------------------
+
+        if (!Double.isFinite(amount)) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Der Betrag muss eine gültige Zahl sein.",
+                    "Ungültiger Betrag",
+                    JOptionPane.WARNING_MESSAGE);
+
+            return;
+        }
+
+        // --------------------------------------------------------
+        // 9. 0 Euro verhindern
+        // --------------------------------------------------------
+
+        if (amount == 0) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Der Betrag darf nicht 0 Euro sein.",
+                    "Ungültiger Betrag",
+                    JOptionPane.WARNING_MESSAGE);
+
+            return;
+        }
+
+        // --------------------------------------------------------
+        // 10. Payment erstellen
+        // --------------------------------------------------------
+
+        Payment payment;
+
+        try {
+
+            payment = new Payment(
+                    date,
+                    amount,
+                    description);
+
+        } catch (NegativeAmountException e) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    e.getMessage(),
+                    "Fehler beim Payment",
+                    JOptionPane.ERROR_MESSAGE);
+
+            return;
+        }
+
+        // --------------------------------------------------------
+        // 11. Payment zum Account hinzufügen
+        // --------------------------------------------------------
+
+        try {
+
+            bank.addTransaction(
+                    accountName,
+                    payment);
+
+            // ----------------------------------------------------
+            // 12. Erfolg anzeigen
+            // ----------------------------------------------------
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Payment wurde erfolgreich erstellt.",
+                    "Erfolgreich",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            // Anzeige aktualisieren
+            menuAktualisieren();
+
+        } catch (TransactionAlreadyExistException e) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    e.getMessage(),
+                    "Transaktion existiert bereits",
+                    JOptionPane.WARNING_MESSAGE);
+
+        } catch (AccountDoesNotExistException e) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    e.getMessage(),
+                    "Account existiert nicht",
+                    JOptionPane.ERROR_MESSAGE);
+
+        } catch (TransactionAttributeException e) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    e.getMessage(),
+                    "Ungültige Transaktion",
+                    JOptionPane.WARNING_MESSAGE);
+
+        } catch (InvalidIncomingInterestException
+                | InvalidOutgoingInterestException e) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    e.getMessage(),
+                    "Ungültiger Zinssatz",
+                    JOptionPane.ERROR_MESSAGE);
+
+        } catch (IOException e) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    e.getMessage(),
+                    "Fehler beim Speichern",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -158,23 +317,28 @@ public class AccountViewController extends Controller {
      * vom aktuell geöffneten Account
      * zu einem anderen Account.
      */
+    /**
+     * Erstellt eine Überweisung vom aktuell geöffneten Account
+     * zu einem anderen Account.
+     */
     public void TransferErstellen() {
 
         // --------------------------------------------------------
-        // Eingabefelder
+        // 1. Eingabefelder erstellen
         // --------------------------------------------------------
 
         JTextField dateField = new JTextField(10);
         JTextField amountField = new JTextField(10);
         JTextField descriptionField = new JTextField(10);
-        JTextField senderField = new JTextField(accountName);
-        JTextField recipientField = new JTextField(10);
 
-        // Sender ist automatisch das aktuell geöffnete Konto
+        // Sender ist automatisch der aktuell geöffnete Account
+        JTextField senderField = new JTextField(accountName);
         senderField.setEditable(false);
 
+        JTextField recipientField = new JTextField(10);
+
         // --------------------------------------------------------
-        // Eingabefenster aufbauen
+        // 2. Eingabefenster erstellen
         // --------------------------------------------------------
 
         JPanel panel = new JPanel();
@@ -188,23 +352,27 @@ public class AccountViewController extends Controller {
 
         panel.add(new JLabel("Date (yyyy-mm-dd):"));
         panel.add(dateField);
+
         panel.add(new JLabel("Betrag:"));
         panel.add(amountField);
+
         panel.add(new JLabel("Beschreibung:"));
         panel.add(descriptionField);
+
         panel.add(new JLabel("Sender:"));
         panel.add(senderField);
+
         panel.add(new JLabel("Empfänger:"));
         panel.add(recipientField);
 
         // --------------------------------------------------------
-        // Dialog anzeigen
+        // 3. Dialog anzeigen
         // --------------------------------------------------------
 
         int result = JOptionPane.showConfirmDialog(
                 null,
                 panel,
-                "Überweisung",
+                "Überweisung erstellen",
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE);
 
@@ -214,20 +382,76 @@ public class AccountViewController extends Controller {
         }
 
         // --------------------------------------------------------
-        // Eingaben auslesen
+        // 4. Eingaben auslesen
         // --------------------------------------------------------
 
-        String date = dateField.getText().trim();
-        String description = descriptionField.getText().trim();
+        String date = dateField
+                .getText()
+                .trim();
+
+        String description = descriptionField
+                .getText()
+                .trim();
+
         String sender = accountName;
-        String recipient = recipientField.getText().trim();
+
+        String recipient = recipientField
+                .getText()
+                .trim();
 
         // --------------------------------------------------------
-        // Betrag umwandeln
+        // 5. Datum überprüfen
+        // --------------------------------------------------------
+
+        if (date.isEmpty()) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Das Datum darf nicht leer sein.",
+                    "Ungültiges Datum",
+                    JOptionPane.WARNING_MESSAGE);
+
+            return;
+        }
+
+        // --------------------------------------------------------
+        // 6. Empfänger überprüfen
+        // --------------------------------------------------------
+
+        if (recipient.isEmpty()) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Bitte einen Empfänger eingeben.",
+                    "Ungültiger Empfänger",
+                    JOptionPane.WARNING_MESSAGE);
+
+            return;
+        }
+
+        // --------------------------------------------------------
+        // 7. Sender und Empfänger vergleichen
+        // --------------------------------------------------------
+
+        if (sender.equals(recipient)) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Sender und Empfänger dürfen nicht gleich sein.",
+                    "Ungültige Überweisung",
+                    JOptionPane.WARNING_MESSAGE);
+
+            return;
+        }
+
+        // --------------------------------------------------------
+        // 8. Betrag einlesen
         // --------------------------------------------------------
 
         double amount;
+
         try {
+
             amount = Double.parseDouble(
                     amountField
                             .getText()
@@ -238,13 +462,44 @@ public class AccountViewController extends Controller {
             JOptionPane.showMessageDialog(
                     null,
                     "Bitte einen gültigen Betrag eingeben.",
-                    "Fehler",
-                    JOptionPane.ERROR_MESSAGE);
+                    "Ungültiger Betrag",
+                    JOptionPane.WARNING_MESSAGE);
+
             return;
         }
 
         // --------------------------------------------------------
-        // Überweisung durchführen
+        // 9. NaN und Infinity verhindern
+        // --------------------------------------------------------
+
+        if (!Double.isFinite(amount)) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Der Betrag muss eine gültige Zahl sein.",
+                    "Ungültiger Betrag",
+                    JOptionPane.WARNING_MESSAGE);
+
+            return;
+        }
+
+        // --------------------------------------------------------
+        // 10. Betrag muss größer als 0 sein
+        // --------------------------------------------------------
+
+        if (amount <= 0) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Der Betrag muss größer als 0 Euro sein.",
+                    "Ungültiger Betrag",
+                    JOptionPane.WARNING_MESSAGE);
+
+            return;
+        }
+
+        // --------------------------------------------------------
+        // 11. Überweisung durchführen
         // --------------------------------------------------------
 
         try {
@@ -255,6 +510,10 @@ public class AccountViewController extends Controller {
                     date,
                     amount,
                     description);
+
+            // ----------------------------------------------------
+            // 12. Erfolg anzeigen
+            // ----------------------------------------------------
 
             JOptionPane.showMessageDialog(
                     null,
@@ -267,19 +526,52 @@ public class AccountViewController extends Controller {
                     "Erfolgreich",
                     JOptionPane.INFORMATION_MESSAGE);
 
-        } catch (Exception e) {
+            // ----------------------------------------------------
+            // 13. Anzeige aktualisieren
+            // ----------------------------------------------------
+
+            menuAktualisieren();
+
+        } catch (AccountDoesNotExistException e) {
 
             JOptionPane.showMessageDialog(
                     null,
                     e.getMessage(),
-                    "Überweisung fehlgeschlagen",
+                    "Account existiert nicht",
+                    JOptionPane.WARNING_MESSAGE);
+
+        } catch (TransactionAlreadyExistException e) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    e.getMessage(),
+                    "Transaktion existiert bereits",
+                    JOptionPane.WARNING_MESSAGE);
+
+        } catch (TransactionAttributeException e) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    e.getMessage(),
+                    "Ungültige Überweisung",
+                    JOptionPane.WARNING_MESSAGE);
+
+        } catch (NegativeAmountException e) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    e.getMessage(),
+                    "Ungültiger Betrag",
+                    JOptionPane.WARNING_MESSAGE);
+
+        } catch (IOException e) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    e.getMessage(),
+                    "Fehler beim Speichern",
                     JOptionPane.ERROR_MESSAGE);
         }
-
-        // --------------------------------------------------------
-        // Anzeige aktualisieren
-        // --------------------------------------------------------
-        menuAktualisieren();
     }
 
     /**

@@ -401,40 +401,109 @@ public class PrivateBank implements Bank {
 
     @Override
     public void addTransaction(String account, Transaction transaction)
-            throws TransactionAlreadyExistException, AccountDoesNotExistException, TransactionAttributeException,
-            InvalidIncomingInterestException, InvalidOutgoingInterestException, IOException {
+            throws TransactionAlreadyExistException,
+            AccountDoesNotExistException,
+            TransactionAttributeException,
+            InvalidIncomingInterestException,
+            InvalidOutgoingInterestException,
+            IOException {
 
-        // wenn die datei nicht existiert dann haben wir eine Exception
-        if (!(accountsToTransactions.containsKey(account))) {
-            throw new AccountDoesNotExistException("Das angegebene Konto existiert nicht.");
+        // --------------------------------------------------------
+        // 1. Prüfen, ob der Account existiert
+        // --------------------------------------------------------
+
+        if (!accountsToTransactions.containsKey(account)) {
+            throw new AccountDoesNotExistException(
+                    "Das angegebene Konto existiert nicht.");
         }
 
+        // --------------------------------------------------------
+        // 2. Prüfen, ob die Transaktion null ist
+        // --------------------------------------------------------
+
+        if (transaction == null) {
+            throw new TransactionAttributeException(
+                    "Die Transaktion darf nicht null sein.");
+        }
+
+        // --------------------------------------------------------
+        // 3. Betrag überprüfen
+        // --------------------------------------------------------
+
+        // NaN und Infinity verhindern
+        if (!Double.isFinite(transaction.getAmount())) {
+            throw new TransactionAttributeException(
+                    "Der Betrag muss eine gültige Zahl sein.");
+        }
+
+        // 0 Euro Transaktionen verhindern
+        if (transaction.getAmount() == 0) {
+            throw new TransactionAttributeException(
+                    "Der Betrag darf nicht 0 Euro sein.");
+        }
+
+        // --------------------------------------------------------
+        // 4. Datum und Beschreibung überprüfen
+        // --------------------------------------------------------
         /*
-         * Überprüfe, ob die Transaktion gültig ist
-         * Z.B
-         * Description und Date darf nicht null und "" (leer) sein.
+         * if (transaction.getDate() == null
+         * || transaction.getDate().isBlank()) {
+         * 
+         * throw new TransactionAttributeException(
+         * "Das Datum darf nicht leer sein.");
+         * }
+         * 
+         * if (transaction.getDescription() == null
+         * || transaction.getDescription().isBlank()) {
+         * 
+         * throw new TransactionAttributeException(
+         * "Die Beschreibung darf nicht leer sein.");
+         * }
          */
-        if (transaction.getDescription() == null || transaction.getDescription().isEmpty()
-                || transaction.getDate() == null || transaction.getDate().isEmpty()) {
-            throw new TransactionAttributeException("Invalid transaction attributes: " + transaction);
-        }
 
-        // Überprüfen, ob die Transaktion bereits existiert
-        List<Transaction> transactionList = accountsToTransactions.get(account); // Liste der Transaktionen für das
-                                                                                 // Konto
+        // --------------------------------------------------------
+        // 5. Liste des Accounts holen
+        // --------------------------------------------------------
+
+        List<Transaction> transactionList = accountsToTransactions.get(account);
+
+        // --------------------------------------------------------
+        // 6. Prüfen, ob Transaktion bereits existiert
+        // --------------------------------------------------------
+
         if (transactionList.contains(transaction)) {
-            throw new TransactionAlreadyExistException("Die Transaktion existiert bereits im Konto '" + account + "'.");
-        }
-        // Wenn es sich um ein Payment handelt, incomingInterest und outgoingInterest
-        // setzen
-        if (transaction instanceof Payment) {
-            Payment payment = (Payment) transaction;
-            payment.setIncomingInterest(this.getIncomingInterest()); // Zinsen der Bank setzen
-            payment.setOutgoingInterest(this.getOutgoingInterest()); // Zinsen der Bank setzen
+
+            throw new TransactionAlreadyExistException(
+                    "Die Transaktion existiert bereits im Konto '"
+                            + account
+                            + "'.");
         }
 
-        // Transaktion hinzufügen
+        // --------------------------------------------------------
+        // 7. Bei Payment die Zinssätze der Bank setzen
+        // --------------------------------------------------------
+
+        if (transaction instanceof Payment) {
+
+            Payment payment = (Payment) transaction;
+
+            payment.setIncomingInterest(
+                    this.getIncomingInterest());
+
+            payment.setOutgoingInterest(
+                    this.getOutgoingInterest());
+        }
+
+        // --------------------------------------------------------
+        // 8. Transaktion hinzufügen
+        // --------------------------------------------------------
+
         transactionList.add(transaction);
+
+        // --------------------------------------------------------
+        // 9. Account in JSON speichern
+        // --------------------------------------------------------
+
         this.writeAccount(account);
     }
 
@@ -665,6 +734,13 @@ public class PrivateBank implements Bank {
         // 4. Betrag überprüfen
         // --------------------------------------------------------
 
+        // NaN und Infinity verhindern
+        if (!Double.isFinite(amount)) {
+            throw new TransactionAttributeException(
+                    "Der Betrag muss eine gültige Zahl sein.");
+        }
+
+        // Betrag muss größer als 0 sein
         if (amount <= 0) {
             throw new TransactionAttributeException(
                     "Der Betrag muss größer als 0 sein.");
