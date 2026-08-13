@@ -69,16 +69,44 @@ public class PrivateBank implements Bank {
     }
 
     /**
-     * kopierkonstruktor
-     *
-     * @param pb
+     * Copy Konstruktor.
+     * Erstellt eine Kopie einer bestehenden PrivateBank.
      */
-    public PrivateBank(PrivateBank pb) throws InvalidIncomingInterestException, InvalidOutgoingInterestException {
-        // Kopiert die ersten drei Attribute
-        this.setName(pb.getName());
-        setIncomingInterest(pb.getIncomingInterest());
-        setOutgoingInterest(pb.getOutgoingInterest());
+    public PrivateBank(PrivateBank pb)
+            throws InvalidIncomingInterestException,
+            InvalidOutgoingInterestException {
 
+        // Prüfen, ob überhaupt eine Bank übergeben wurde
+        if (pb == null) {
+            throw new IllegalArgumentException(
+                    "Die zu kopierende Bank darf nicht null sein.");
+        }
+
+        // --------------------------------------------------------
+        // 1. Bankdaten kopieren
+        // --------------------------------------------------------
+
+        this.name = pb.name;
+
+        this.directoryName = pb.directoryName;
+
+        setIncomingInterest(
+                pb.incomingInterest);
+
+        setOutgoingInterest(
+                pb.outgoingInterest);
+
+        // --------------------------------------------------------
+        // 2. Accounts und deren Listen kopieren
+        // --------------------------------------------------------
+
+        for (Map.Entry<String, List<Transaction>> entry : pb.accountsToTransactions.entrySet()) {
+
+            this.accountsToTransactions.put(
+                    entry.getKey(),
+                    new ArrayList<>(
+                            entry.getValue()));
+        }
     }
 
     /**
@@ -345,42 +373,163 @@ public class PrivateBank implements Bank {
      */
 
     @Override
-    public void createAccount(String account, List<Transaction> transactions)
-            throws AccountAlreadyExistsException, TransactionAlreadyExistException, TransactionAttributeException,
-            IOException, AccountDoesNotExistException {
+    public void createAccount(
+            String account,
+            List<Transaction> transactions) throws AccountAlreadyExistsException,
+            TransactionAlreadyExistException,
+            TransactionAttributeException,
+            IOException,
+            AccountDoesNotExistException {
+
+        // --------------------------------------------------------
+        // 1. Accountnamen prüfen und bereinigen
+        // --------------------------------------------------------
 
         account = validateAccountName(account);
 
-        // Überprüfe, ob das Konto bereits existiert
+        // --------------------------------------------------------
+        // 2. Prüfen, ob Account bereits existiert
+        // --------------------------------------------------------
+
         if (accountsToTransactions.containsKey(account)) {
-            throw new AccountAlreadyExistsException("Account already exists: " + account);
+            throw new AccountAlreadyExistsException(
+                    "Account existiert bereits: " + account);
         }
 
-        // Neue Liste für Transaktionen erstellen
+        // --------------------------------------------------------
+        // 3. Groß/Kleinschreibung prüfen
+        // Mohammad und MOHAMMAD sollen nicht doppelt existieren
+        // --------------------------------------------------------
+
+        for (String existingAccount : accountsToTransactions.keySet()) {
+
+            if (existingAccount.equalsIgnoreCase(account)) {
+                throw new AccountAlreadyExistsException(
+                        "Ein Account mit diesem Namen existiert bereits: "
+                                + existingAccount);
+            }
+        }
+
+        // --------------------------------------------------------
+        // 4. Prüfen, ob Transaktionsliste null ist
+        // --------------------------------------------------------
+
+        if (transactions == null) {
+            throw new TransactionAttributeException(
+                    "Die Transaktionsliste darf nicht null sein.");
+        }
+
+        // --------------------------------------------------------
+        // 5. Neue interne Liste erstellen
+        // --------------------------------------------------------
+
         List<Transaction> transactionList = new ArrayList<>();
 
+        // --------------------------------------------------------
+        // 6. Alle Transaktionen überprüfen
+        // --------------------------------------------------------
+
         for (Transaction transaction : transactions) {
-            // contains: Überprüfen, ob die Transaktion bereits in der Liste ist
-            if (transactionList.contains(transaction)) {
-                throw new TransactionAlreadyExistException("Duplicate transaction detected: " + transaction);
-            }
-            /*
-             * Überprüfe, ob die Transaktion gültig ist
-             * Z.B
-             * Description und Date darf nicht null und "" (leer) sein.
-             */
-            if (transaction.getDescription() == null || transaction.getDescription().isEmpty()
-                    || transaction.getDate() == null || transaction.getDate().isEmpty()) {
-                throw new TransactionAttributeException("Invalid transaction attributes: " + transaction);
+
+            // ----------------------------------------------------
+            // 6.1 Transaktion darf nicht null sein
+            // ----------------------------------------------------
+
+            if (transaction == null) {
+                throw new TransactionAttributeException(
+                        "Eine Transaktion darf nicht null sein.");
             }
 
-            // Transaktion hinzufügen
+            // ----------------------------------------------------
+            // 6.2 Betrag prüfen
+            // ----------------------------------------------------
+
+            if (!Double.isFinite(transaction.getAmount())) {
+                throw new TransactionAttributeException(
+                        "Der Betrag muss eine gültige Zahl sein.");
+            }
+
+            if (transaction.getAmount() == 0) {
+                throw new TransactionAttributeException(
+                        "Der Betrag darf nicht 0 Euro sein.");
+            }
+
+            // ----------------------------------------------------
+            // 6.3 Datum prüfen
+            // ----------------------------------------------------
+
+            if (transaction.getDate() == null
+                    || transaction.getDate().isBlank()) {
+
+                throw new TransactionAttributeException(
+                        "Das Datum darf nicht leer sein.");
+            }
+
+            // ----------------------------------------------------
+            // 6.4 Beschreibung prüfen
+            // ----------------------------------------------------
+
+            if (transaction.getDescription() == null
+                    || transaction.getDescription().isBlank()) {
+
+                throw new TransactionAttributeException(
+                        "Die Beschreibung darf nicht leer sein.");
+            }
+
+            // ----------------------------------------------------
+            // 6.5 Duplikate verhindern
+            // ----------------------------------------------------
+
+            if (transactionList.contains(transaction)) {
+                throw new TransactionAlreadyExistException(
+                        "Doppelte Transaktion gefunden: "
+                                + transaction);
+            }
+
+            // ----------------------------------------------------
+            // 6.6 Bei Payment Zinssätze der Bank setzen
+            // ----------------------------------------------------
+
+            if (transaction instanceof Payment) {
+
+                Payment payment = (Payment) transaction;
+
+                try {
+
+                    payment.setIncomingInterest(
+                            this.getIncomingInterest());
+
+                    payment.setOutgoingInterest(
+                            this.getOutgoingInterest());
+
+                } catch (InvalidIncomingInterestException
+                        | InvalidOutgoingInterestException e) {
+
+                    throw new TransactionAttributeException(
+                            "Ungültiger Zinssatz beim Payment.");
+                }
+            }
+
+            // ----------------------------------------------------
+            // 6.7 Transaktion übernehmen
+            // ----------------------------------------------------
+
             transactionList.add(transaction);
         }
 
-        // Konto mit Transaktionen hinzufügen
-        accountsToTransactions.put(account, transactionList);
-        this.writeAccount(account);
+        // --------------------------------------------------------
+        // 7. Account erst jetzt erstellen
+        // --------------------------------------------------------
+
+        accountsToTransactions.put(
+                account,
+                transactionList);
+
+        // --------------------------------------------------------
+        // 8. Einmal in JSON speichern
+        // --------------------------------------------------------
+
+        writeAccount(account);
     }
 
     /**

@@ -39,7 +39,6 @@ public class AccountViewController extends Controller {
      * @param stage
      */
     public AccountViewController(Stage stage) {
-
     }
 
     // Initialisierungsmethode
