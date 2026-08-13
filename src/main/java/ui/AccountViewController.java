@@ -153,121 +153,132 @@ public class AccountViewController extends Controller {
     /**
      * TransferErstellen
      */
+    /**
+     * Erstellt eine echte Überweisung
+     * vom aktuell geöffneten Account
+     * zu einem anderen Account.
+     */
     public void TransferErstellen() {
-        // Erstelle Eingabefelder
+
+        // --------------------------------------------------------
+        // Eingabefelder
+        // --------------------------------------------------------
+
         JTextField dateField = new JTextField(10);
         JTextField amountField = new JTextField(10);
         JTextField descriptionField = new JTextField(10);
-        JTextField senderField = new JTextField(10);
+        JTextField senderField = new JTextField(accountName);
         JTextField recipientField = new JTextField(10);
 
-        // Panel für Eingaben erstellen
+        // Sender ist automatisch das aktuell geöffnete Konto
+        senderField.setEditable(false);
+
+        // --------------------------------------------------------
+        // Eingabefenster aufbauen
+        // --------------------------------------------------------
+
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(5, 2, 5, 5));
+
+        panel.setLayout(
+                new GridLayout(
+                        5,
+                        2,
+                        5,
+                        5));
+
         panel.add(new JLabel("Date (yyyy-mm-dd):"));
         panel.add(dateField);
-        panel.add(new JLabel("Amount:"));
+        panel.add(new JLabel("Betrag:"));
         panel.add(amountField);
-        panel.add(new JLabel("Description:"));
+        panel.add(new JLabel("Beschreibung:"));
         panel.add(descriptionField);
         panel.add(new JLabel("Sender:"));
         panel.add(senderField);
-        panel.add(new JLabel("Recipient:"));
+        panel.add(new JLabel("Empfänger:"));
         panel.add(recipientField);
 
-        // Zeige das Dialogfenster
-        int result = JOptionPane.showConfirmDialog(null, panel,
-                "Input Dialog", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        // --------------------------------------------------------
+        // Dialog anzeigen
+        // --------------------------------------------------------
 
-        // Überprüfe, ob OK geklickt wurde
-        if (result == JOptionPane.OK_OPTION) {
-            String date = dateField.getText();
-            String description = descriptionField.getText() + "";
-            String sender = senderField.getText();
-            String recipient = recipientField.getText();
+        int result = JOptionPane.showConfirmDialog(
+                null,
+                panel,
+                "Überweisung",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE);
 
-            double amount = 0;
-            try {
-                amount = Double.parseDouble(amountField.getText());
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "NumberFormatException: " + e.getMessage(),
-                        "TransactionAlreadyExistException", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            if (sender.equals(accountName)) {
-                // Benutz = sender
-                try {
-                    OutgoingTransfer out = new OutgoingTransfer(date, amount, description, sender, recipient);
-                    this.bank.addTransaction(accountName, out);
-                } catch (NegativeAmountException e) {
-                    JOptionPane.showMessageDialog(null, "TransactionAlreadyExistException: " + e.getMessage(),
-                            "TransactionAlreadyExistException", JOptionPane.ERROR_MESSAGE);
-                } catch (TransactionAlreadyExistException e) {
-                    JOptionPane.showMessageDialog(null, "TransactionAlreadyExistException: " + e.getMessage(),
-                            "TransactionAlreadyExistException", JOptionPane.ERROR_MESSAGE);
-                } catch (AccountDoesNotExistException e) {
-                    JOptionPane.showMessageDialog(null, "AccountDoesNotExistException: " + e.getMessage(),
-                            "AccountDoesNotExistException", JOptionPane.ERROR_MESSAGE);
-
-                } catch (TransactionAttributeException e) {
-                    JOptionPane.showMessageDialog(null, "TransactionAttributeException: " + e.getMessage(),
-                            "TransactionAttributeException", JOptionPane.ERROR_MESSAGE);
-
-                } catch (InvalidIncomingInterestException e) {
-                    JOptionPane.showMessageDialog(null, "InvalidIncomingInterestException: " + e.getMessage(),
-                            "InvalidIncomingInterestException", JOptionPane.ERROR_MESSAGE);
-
-                } catch (InvalidOutgoingInterestException e) {
-                    JOptionPane.showMessageDialog(null, "InvalidOutgoingInterestException: " + e.getMessage(),
-                            "InvalidOutgoingInterestException", JOptionPane.ERROR_MESSAGE);
-                } catch (IOException e) {
-                    JOptionPane.showMessageDialog(null, "IOException: " + e.getMessage(), "IOException",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-
-            } else if (recipient.equals(accountName)) {
-                // Benutz = empfänger
-                try {
-                    IncomingTransfer in = new IncomingTransfer(date, amount, description, sender, recipient);
-                    this.bank.addTransaction(accountName, in);
-                } catch (NegativeAmountException e) {
-                    JOptionPane.showMessageDialog(null, "TransactionAlreadyExistException: " + e.getMessage(),
-                            "TransactionAlreadyExistException", JOptionPane.ERROR_MESSAGE);
-                } catch (TransactionAlreadyExistException e) {
-                    JOptionPane.showMessageDialog(null, "TransactionAlreadyExistException: " + e.getMessage(),
-                            "TransactionAlreadyExistException", JOptionPane.ERROR_MESSAGE);
-                } catch (AccountDoesNotExistException e) {
-                    JOptionPane.showMessageDialog(null, "AccountDoesNotExistException: " + e.getMessage(),
-                            "AccountDoesNotExistException", JOptionPane.ERROR_MESSAGE);
-
-                } catch (TransactionAttributeException e) {
-                    JOptionPane.showMessageDialog(null, "TransactionAttributeException: " + e.getMessage(),
-                            "TransactionAttributeException", JOptionPane.ERROR_MESSAGE);
-
-                } catch (InvalidIncomingInterestException e) {
-                    JOptionPane.showMessageDialog(null, "InvalidIncomingInterestException: " + e.getMessage(),
-                            "InvalidIncomingInterestException", JOptionPane.ERROR_MESSAGE);
-
-                } catch (InvalidOutgoingInterestException e) {
-                    JOptionPane.showMessageDialog(null, "InvalidOutgoingInterestException: " + e.getMessage(),
-                            "InvalidOutgoingInterestException", JOptionPane.ERROR_MESSAGE);
-                } catch (IOException e) {
-                    JOptionPane.showMessageDialog(null, "IOException: " + e.getMessage(), "IOException",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                JOptionPane.showMessageDialog(null,
-                        "Fehler beim sender und recipient",
-                        "sender und recipient", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-        } else {
-            JOptionPane.showMessageDialog(null,
-                    "Input canceled.",
-                    "Dialog Canceled", JOptionPane.INFORMATION_MESSAGE);
+        // Benutzer hat abgebrochen
+        if (result != JOptionPane.OK_OPTION) {
+            return;
         }
+
+        // --------------------------------------------------------
+        // Eingaben auslesen
+        // --------------------------------------------------------
+
+        String date = dateField.getText().trim();
+        String description = descriptionField.getText().trim();
+        String sender = accountName;
+        String recipient = recipientField.getText().trim();
+
+        // --------------------------------------------------------
+        // Betrag umwandeln
+        // --------------------------------------------------------
+
+        double amount;
+        try {
+            amount = Double.parseDouble(
+                    amountField
+                            .getText()
+                            .trim());
+
+        } catch (NumberFormatException e) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Bitte einen gültigen Betrag eingeben.",
+                    "Fehler",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // --------------------------------------------------------
+        // Überweisung durchführen
+        // --------------------------------------------------------
+
+        try {
+
+            bank.transfer(
+                    sender,
+                    recipient,
+                    date,
+                    amount,
+                    description);
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Überweisung erfolgreich!\n\n"
+                            + amount
+                            + " Euro von "
+                            + sender
+                            + " an "
+                            + recipient,
+                    "Erfolgreich",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (Exception e) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    e.getMessage(),
+                    "Überweisung fehlgeschlagen",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+
+        // --------------------------------------------------------
+        // Anzeige aktualisieren
+        // --------------------------------------------------------
         menuAktualisieren();
     }
 

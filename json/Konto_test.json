@@ -28,5 +28,15 @@
       "amount": 50.0,
       "description": "Beschreibung"
     }
+  },
+  {
+    "CLASSNAME": "IncomingTransfer",
+    "INSTANCE": {
+      "sender": "Hama Anzz",
+      "recipient": "test",
+      "date": "date",
+      "amount": 10.0,
+      "description": ""
+    }
   }
 ]

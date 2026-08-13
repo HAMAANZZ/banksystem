@@ -667,4 +667,151 @@ public class PrivateBank implements Bank {
 
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * Überweist Geld von einem Konto auf ein anderes Konto.
+     *
+     * Beim Sender wird ein OutgoingTransfer gespeichert.
+     * Beim Empfänger wird ein IncomingTransfer gespeichert.
+     */
+    public void transfer(
+            String sender,
+            String recipient,
+            String date,
+            double amount,
+            String description) throws AccountDoesNotExistException,
+            NegativeAmountException,
+            TransactionAlreadyExistException,
+            TransactionAttributeException,
+            IOException {
+
+        // --------------------------------------------------------
+        // 1. Prüfen, ob Sender existiert
+        // --------------------------------------------------------
+
+        if (!accountsToTransactions.containsKey(sender)) {
+            throw new AccountDoesNotExistException(
+                    "Senderkonto existiert nicht: " + sender);
+        }
+
+        // --------------------------------------------------------
+        // 2. Prüfen, ob Empfänger existiert
+        // --------------------------------------------------------
+
+        if (!accountsToTransactions.containsKey(recipient)) {
+            throw new AccountDoesNotExistException(
+                    "Empfängerkonto existiert nicht: " + recipient);
+        }
+
+        // --------------------------------------------------------
+        // 3. Sender und Empfänger dürfen nicht gleich sein
+        // --------------------------------------------------------
+
+        if (sender.equals(recipient)) {
+            throw new TransactionAttributeException(
+                    "Sender und Empfänger dürfen nicht gleich sein.");
+        }
+
+        // --------------------------------------------------------
+        // 4. Betrag überprüfen
+        // --------------------------------------------------------
+
+        if (amount <= 0) {
+            throw new TransactionAttributeException(
+                    "Der Betrag muss größer als 0 sein.");
+        }
+
+        // --------------------------------------------------------
+        // 5. Datum überprüfen
+        // --------------------------------------------------------
+
+        if (date == null || date.isBlank()) {
+            throw new TransactionAttributeException(
+                    "Das Datum darf nicht leer sein.");
+        }
+
+        // --------------------------------------------------------
+        // 6. Beschreibung überprüfen die Darf  leer sein
+        // --------------------------------------------------------
+
+        // if (description == null || description.isBlank()) {
+        //     throw new TransactionAttributeException(
+        //             "Die Beschreibung darf nicht leer sein.");
+        // }
+
+        // --------------------------------------------------------
+        // 7. Prüfen, ob genug Geld vorhanden ist
+        // --------------------------------------------------------
+
+        double balance = getAccountBalance(sender);
+
+        if (balance < amount) {
+            throw new TransactionAttributeException(
+                    "Nicht genügend Guthaben.");
+        }
+
+        // --------------------------------------------------------
+        // 8. Zwei Transaktionen erzeugen
+        // --------------------------------------------------------
+
+        OutgoingTransfer outgoingTransfer = new OutgoingTransfer(
+                date,
+                amount,
+                description,
+                sender,
+                recipient);
+
+        IncomingTransfer incomingTransfer = new IncomingTransfer(
+                date,
+                amount,
+                description,
+                sender,
+                recipient);
+
+        // --------------------------------------------------------
+        // 9. Prüfen, ob Transaktionen schon existieren
+        // --------------------------------------------------------
+
+        if (containsTransaction(sender, outgoingTransfer)) {
+            throw new TransactionAlreadyExistException(
+                    "OutgoingTransfer existiert bereits.");
+        }
+
+        if (containsTransaction(recipient, incomingTransfer)) {
+            throw new TransactionAlreadyExistException(
+                    "IncomingTransfer existiert bereits.");
+        }
+
+        // --------------------------------------------------------
+        // 10. Sender bekommt negative Transaktion
+        // --------------------------------------------------------
+
+        accountsToTransactions
+                .get(sender)
+                .add(outgoingTransfer);
+
+        // --------------------------------------------------------
+        // 11. Empfänger bekommt positive Transaktion
+        // --------------------------------------------------------
+
+        accountsToTransactions
+                .get(recipient)
+                .add(incomingTransfer);
+
+        // --------------------------------------------------------
+        // 12. Beide Accounts speichern
+        // --------------------------------------------------------
+
+        writeAccount(sender);
+        writeAccount(recipient);
+
+        System.out.println(
+                amount
+                        + " Euro von "
+                        + sender
+                        + " an "
+                        + recipient
+                        + " überwiesen.");
+    }
+
 }
