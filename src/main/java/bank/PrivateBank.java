@@ -301,18 +301,32 @@ public class PrivateBank implements Bank {
      */
     @Override
     public void createAccount(String account)
-            throws AccountAlreadyExistsException, IOException, AccountDoesNotExistException {
-        // containsKey: Überprüfe, ob das Konto bereits in der Map existiert
-        // containsKey => ob eine bestimmte Map einen bestimmten Schlüssel (key) enthält
+            throws AccountAlreadyExistsException,
+            IOException,
+            AccountDoesNotExistException {
+
+        // Accountnamen prüfen und bereinigen
+        account = validateAccountName(account);
+
+        // Prüfen, ob Account bereits existiert
         if (accountsToTransactions.containsKey(account)) {
-            throw new AccountAlreadyExistsException("Account already exists: " + account);
+            throw new AccountAlreadyExistsException("Account existiert bereits: " + account);
         }
 
-        // Füge das Konto mit einer leeren Transaktionsliste hinzu
+        // Zusätzlich Groß/Kleinschreibung beachten
+        for (String existingAccount : accountsToTransactions.keySet()) {
+
+            if (existingAccount.equalsIgnoreCase(account)) {
+                throw new AccountAlreadyExistsException(
+                        "Ein Account mit diesem Namen existiert bereits: " + existingAccount);
+            }
+        }
+
+        // Account erstellen
         accountsToTransactions.put(account, new ArrayList<>());
 
-        this.writeAccount(account);
-
+        // JSON Datei speichern
+        writeAccount(account);
     }
 
     /**
@@ -334,6 +348,9 @@ public class PrivateBank implements Bank {
     public void createAccount(String account, List<Transaction> transactions)
             throws AccountAlreadyExistsException, TransactionAlreadyExistException, TransactionAttributeException,
             IOException, AccountDoesNotExistException {
+
+        account = validateAccountName(account);
+
         // Überprüfe, ob das Konto bereits existiert
         if (accountsToTransactions.containsKey(account)) {
             throw new AccountAlreadyExistsException("Account already exists: " + account);
@@ -744,6 +761,42 @@ public class PrivateBank implements Bank {
                         + " an "
                         + recipient
                         + " überwiesen.");
+    }
+
+    /**
+     * Prüft und bereinigt einen Accountnamen.
+     */
+    private String validateAccountName(String account) {
+
+        // null verhindern
+        if (account == null) {
+            throw new IllegalArgumentException(
+                    "Der Accountname darf nicht null sein.");
+        }
+
+        // Leerzeichen vorne und hinten entfernen
+        String cleanName = account.trim();
+
+        // Leeren Namen verhindern
+        if (cleanName.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Der Accountname darf nicht leer sein.");
+        }
+
+        // Zu lange Namen verhindern
+        if (cleanName.length() > 50) {
+            throw new IllegalArgumentException(
+                    "Der Accountname darf maximal 50 Zeichen haben.");
+        }
+
+        // Zeichen verhindern, die unter Windows
+        // in Dateinamen problematisch sind
+        if (cleanName.matches(".*[\\\\/:*?\"<>|].*")) {
+            throw new IllegalArgumentException(
+                    "Der Accountname enthält ungültige Zeichen.");
+        }
+
+        return cleanName;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

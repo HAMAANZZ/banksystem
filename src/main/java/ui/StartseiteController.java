@@ -50,38 +50,62 @@ public class StartseiteController extends Controller {
     /**
      * erstelleNeuenAccount
      */
+
     private void erstelleNeuenAccount() {
 
-        String accountName = JOptionPane.showInputDialog(null, "Bitte geben Sie den neuen Accountnamen ein:",
-                "Neuen Account hinzufügen", JOptionPane.QUESTION_MESSAGE);
+        String accountName = JOptionPane.showInputDialog(
+                null,
+                "Bitte geben Sie den neuen Accountnamen ein:",
+                "Neuen Account hinzufügen",
+                JOptionPane.QUESTION_MESSAGE);
 
+        // Benutzer hat auf Abbrechen geklickt
         if (accountName == null) {
-            // Benutzer hat auf "Abbrechen" geklickt, keine Aktion notwendig
             System.out.println("Benutzer hat den Vorgang abgebrochen.");
-            return; // Beendet die Methode oder verlässt den aktuellen Kontext
+            return;
         }
 
-        if (!accountName.trim().isEmpty()) {
-            try {
-                bank.createAccount(accountName.trim());
-                listViewAcconts.getItems().add(accountName.trim()); // " Muster " ===> "Muster"
+        try {
 
-            } catch (AccountAlreadyExistsException e) {
-                JOptionPane.showMessageDialog(null, "AccountAlreadyExistsException: " + e.getMessage(), "Fehler",
-                        JOptionPane.ERROR_MESSAGE);
-            } catch (AccountDoesNotExistException e) {
-                JOptionPane.showMessageDialog(null, "AccountDoesNotExistException: " + e.getMessage(), "Fehler",
-                        JOptionPane.ERROR_MESSAGE);
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "IOException: " + e.getMessage(), "Fehler",
-                        JOptionPane.ERROR_MESSAGE);
-            }
+            // Leerzeichen vorne und hinten entfernen
+            String cleanName = accountName.trim();
 
-        } else {
-            JOptionPane.showMessageDialog(null, "Kein gültiger Accountname eingegeben!", "Abbruch",
+            // Account erstellen
+            bank.createAccount(cleanName);
+
+            // Account direkt in der ListView anzeigen
+            listViewAcconts.getItems().add(accountName.trim()); // " Muster " ===> "Muster"
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Account '" + cleanName + "' wurde erfolgreich erstellt.",
+                    "Erfolg",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (IllegalArgumentException e) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    e.getMessage(),
+                    "Ungültiger Accountname",
                     JOptionPane.WARNING_MESSAGE);
+
+        } catch (AccountAlreadyExistsException e) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    e.getMessage(),
+                    "Account existiert bereits",
+                    JOptionPane.WARNING_MESSAGE);
+
+        } catch (AccountDoesNotExistException | IOException e) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    e.getMessage(),
+                    "Fehler",
+                    JOptionPane.ERROR_MESSAGE);
         }
-        // System.out.println("Erstellen Erfolgreich");
     }
 
     /**
