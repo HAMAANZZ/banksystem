@@ -6,7 +6,6 @@ import bank.exceptions.NegativeAmountException;
  * Repräsentiert eine Überweisung mit Datum, Betrag, Beschreibung,
  * Sender und Empfänger.
  */
-//TODO: abstract machen, weil wir nur OutgoingTransfer und IncomingTransfer verwednen werden.
 public class Transfer extends Transaction {
     /**
      * sender = Sender
@@ -38,7 +37,8 @@ public class Transfer extends Transaction {
     }
 
     /**
-     * Konstruktor für eine Überweisung mit Datum, Betrag, Beschreibung, Sender und Empfänger.
+     * Konstruktor für eine Überweisung mit Datum, Betrag, Beschreibung, Sender und
+     * Empfänger.
      *
      * @param date        das Datum der Überweisung
      * @param amount      der Betrag der Überweisung (muss positiv sein)
@@ -46,16 +46,17 @@ public class Transfer extends Transaction {
      * @param sender      der Sender der Überweisung
      * @param recipient   der Empfänger der Überweisung
      */
-    public Transfer(String date, double amount, String description, String sender, String recipient) throws NegativeAmountException {
+    public Transfer(String date, double amount, String description, String sender, String recipient)
+            throws NegativeAmountException {
         super(date, amount, description);
-        //wenn der Amount bei der set richtig gemacht würde dann setze die werte ein.
+        // wenn der Amount bei der set richtig gemacht würde dann setze die werte ein.
         this.sender = sender;
         this.recipient = recipient;
     }
 
-
     /**
-     * Copy-Konstruktor für die Erstellung einer neuen Überweisung basierend auf einer existierenden Überweisung.
+     * Copy-Konstruktor für die Erstellung einer neuen Überweisung basierend auf
+     * einer existierenden Überweisung.
      *
      * @param t die zu kopierende Überweisung
      */
@@ -64,13 +65,15 @@ public class Transfer extends Transaction {
     }
 
     /**
-     * Gibt eine String-Darstellung der Überweisung zurück, inklusive Sender und Empfänger.
+     * Gibt eine String-Darstellung der Überweisung zurück, inklusive Sender und
+     * Empfänger.
      *
      * @return eine textuelle Darstellung der Überweisung
      */
     @Override
     public String toString() {
-        return super.toString() + "\n" + "Transfer{ sender= " + this.getSender() + ", recipien= " + this.getRecipient() + "}\n";
+        return super.toString() + "\n" + "Transfer{ sender= " + this.getSender() + ", recipien= " + this.getRecipient()
+                + "}\n";
     }
 
     /**
@@ -81,7 +84,8 @@ public class Transfer extends Transaction {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;                      // Überprüft, ob es sich um dasselbe Objekt handelt
+        if (this == obj)
+            return true; // Überprüft, ob es sich um dasselbe Objekt handelt
         if (obj == null || getClass() != obj.getClass()) { // Überprüft auf null und gleiche Klasse
             return false;
         }
@@ -101,9 +105,9 @@ public class Transfer extends Transaction {
     public void setAmount(double Amount) throws NegativeAmountException {
         if (Amount < 0) {
             throw new NegativeAmountException("Negative amount");
-        } else this.amount = Amount;
+        } else
+            this.amount = Amount;
     }
-
 
     /**
      * Gibt den Sender der Überweisung zurück.
@@ -140,6 +144,5 @@ public class Transfer extends Transaction {
     public void setRecipient(String recipient) {
         this.recipient = recipient;
     }
-
 
 }

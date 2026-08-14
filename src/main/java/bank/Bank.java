@@ -5,7 +5,6 @@ import bank.exceptions.*;
 import java.io.IOException;
 import java.util.List;
 
-;
 
 /**
  * Interface for a generic bank. Provides multiple methods to handle the interaction between

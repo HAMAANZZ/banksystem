@@ -138,6 +138,7 @@ public class PrivateBank implements Bank {
      * @param obj Das Objekt, mit dem verglichen wird.
      * @return `true`, wenn die Objekte gleich sind, andernfalls `false`.
      */
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -1108,4 +1109,5 @@ public class PrivateBank implements Bank {
         }
 
     }
+
 }
